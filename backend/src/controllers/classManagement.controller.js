@@ -10,7 +10,7 @@ const classManagement = {
             const resData = responseSuccess(result, 'Class created successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
-            const resError = responseError(error);
+            const resError = responseError(error, 'Failed to create class');
             res.status(resError.code).json(resError);
         }
     },
@@ -23,7 +23,7 @@ const classManagement = {
             const resData = responseSuccess(result, 'Classes retrieved successfully for the module');
             res.status(resData.code).json(resData);
         } catch (error) {x
-            const resError = responseError(error);
+            const resError = responseError(error, 'Failed to retrieve classes for the module');
             res.status(resError.code).json(resError);
         }
     },
@@ -36,7 +36,7 @@ const classManagement = {
             const resData = responseSuccess(result, 'Classes retrieved successfully for the lecturer');
             res.status(resData.code).json(resData);
         } catch (error) {
-            const resError = responseError(error);
+            const resError = responseError(error, 'Failed to retrieve classes for the lecturer');
             res.status(resError.code).json(resError);
         }
     },
@@ -49,7 +49,7 @@ const classManagement = {
             const resData = responseSuccess(result, 'Classes retrieved successfully for the student');
             res.status(resData.code).json(resData);
         } catch (error) {
-            const resError = responseError(error);
+            const resError = responseError(error, 'Failed to retrieve classes for the student');
             res.status(resError.code).json(resError);
         }
     },
@@ -63,7 +63,7 @@ const classManagement = {
             const resData = responseSuccess(result, 'Lecturer assigned to class successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
-            const resError = responseError(error);
+            const resError = responseError(error, 'Failed to assign lecturer to class');
             res.status(resError.code).json(resError);
         }
     },
@@ -77,7 +77,7 @@ const classManagement = {
             const resData = responseSuccess(result, 'Students assigned to class successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
-            const resError = responseError(error);
+            const resError = responseError(error, 'Failed to assign students to class');
             res.status(resError.code).json(resError);
         }
     },
@@ -91,7 +91,7 @@ const classManagement = {
             const resData = responseSuccess(result, 'Class updated successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
-            const resError = responseError(error);
+            const resError = responseError(error, 'Failed to update class');
             res.status(resError.code).json(resError);
         }
     },
@@ -104,7 +104,7 @@ const classManagement = {
             const resData = responseSuccess(null, 'Class deleted successfully');
             res.status(resData.code).json(resData);
         } catch (error) {
-            const resError = responseError(error);
+            const resError = responseError(error, 'Failed to delete class');
             res.status(resError.code).json(resError);
         }
     },
@@ -118,7 +118,7 @@ const classManagement = {
             const resData = responseSuccess(result, 'Student attendance retrieved successfully for the class');
             res.status(resData.code).json(resData);
         } catch (error) {
-            const resError = responseError(error);
+            const resError = responseError(error, 'Failed to retrieve student attendance for the class');
             res.status(resError.code).json(resError);
         }
     },
@@ -131,7 +131,7 @@ const classManagement = {
             const resData = responseSuccess(result, 'Student attendance rate retrieved successfully for the module');
             res.status(resData.code).json(resData);
         } catch (error) {
-            const resError = responseError(error);
+            const resError = responseError(error, 'Failed to retrieve student attendance rate for the module');
             res.status(resError.code).json(resError);
         }
     },

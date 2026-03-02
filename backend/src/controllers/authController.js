@@ -1,53 +1,36 @@
 import authService from '../services/auth.service.js';
 import { responseError, responseSuccess } from '../common/helpers/response.helper.js';
 
-// User Login Controller
 export const loginUser = async (req, res) => {
   try {
-    const result = await authService.login(req);
-    const resData = responseSuccess(result, 'User authenticated successfully');
-    return res.status(resData.code).json(resData);
+    const result = await authService.login(req.body);
+    const resData = responseSuccess(result, 'Login successful');
+    return res.status(200).json(resData);
   } catch (error) {
-    console.error("Authentication failed:", error);
-    const resError = responseError(error, 'Authentication failed');
-    return res.status(resError.code).json(resError);
+    const resData = responseError(error, 'Login failed');
+    return res.status(resData.code).json(resData);
   }
 };
 
-// Controller for refreshing the access token
 export const refreshToken = async (req, res) => {
   try {
     const { refreshToken } = req.body;
-
-    if (!refreshToken) {
-      return res.status(400).json({ message: 'Refresh token required' });
-    }
-
-    const tokens = await authService.refreshAccessToken(refreshToken);
-    res.status(200).json(tokens);
+    const result = await authService.refreshAccessToken(refreshToken);
+    const resData = responseSuccess(result, 'Token refreshed successfully');
+    return res.status(200).json(resData);
   } catch (error) {
-    console.error("Refresh token failed:", error);
-    res.status(401).json({ message: 'Invalid or expired refresh token' });
+    const resData = responseError(error, 'Token refresh failed');
+    return res.status(resData.code).json(resData);
   }
 };
 
 export const logOutUser = async (req, res) => {
   try {
-    const result = await authService.logOut(req.user.uid);
-    res.status(200).json(result); 
+    const result = await authService.logOut(req.body.userId);
+    const resData = responseSuccess(result, 'Logout successful');
+    return res.status(200).json(resData);
   } catch (error) {
-    console.error("Error logging out user:", error);
-    res.status(500).json({ message: 'Error logging out user' });
-  }
-};
-
-// Controller for creating a new user
-export const createUser = async (req, res) => {
-  try {
-    const newUser = await authService.createUser(req.body);
-    res.status(201).json({ message: 'User created successfully', user: newUser });
-  } catch (error) {
-    console.error("Error creating user:", error);
-    res.status(500).json({ message: 'Error creating user', error: error.message });
+    const resData = responseError(error, 'Logout failed');
+    return res.status(resData.code).json(resData);
   }
 };

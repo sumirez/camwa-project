@@ -15,19 +15,15 @@
     </div>
 
     <div class="profile-info">
-      <p class="user-name">Anonymous</p>
-      <p class="job-title" style = "cursor: pointer;"(click)="onClick()" *ngIf="user.roles.includes('admin')"> Admin </p>
-      <p class="job-title" style = "cursor: pointer;"(click)="onClick()" *ngIf="user.roles.includes('faculty')"> Faculty Assistant </p>
-      <p class="job-title" style = "cursor: pointer;"(click)="onClick()" *ngIf="user.roles.includes('academic-coordinator')"> Academic Coordinator </p>
-      <p class="job-title" style = "cursor: pointer;"(click)="onClick()" *ngIf="user.roles.includes('lecturer')"> Lecturer </p>
-      <p class="job-title" style = "cursor: pointer;"(click)="onClick()" *ngIf="user.roles.includes('student')"> Student </p>
+      <p class="user-name">{{ user.username }}</p>
+      <p class="job-title">{{ user.roles[0] }}</p>
     </div>
   </div>
   <div class="separator"></div>
 
   <!-- Navigation Links -->
 
-  <nav class="nav-links"*ngIf="user.roles.includes('admin')">
+  <nav class="nav-links"*ngIf="user.roles.includes('ADMIN')">
     <a class="nav-item nav-link" routerLink="/module-view-admin" routerLinkActive="active">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -46,7 +42,7 @@
 
       <h3>Modules</h3>
     </a>
-    <a class="nav-item" routerLink="/dashboard" routerLinkActive="active">
+    <a class="nav-item" routerLink="/dashboard-admin" routerLinkActive="active">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -107,7 +103,7 @@
     </a>
   </nav>
 
-  <nav class="nav-links"*ngIf="user.roles.includes('faculty')">
+  <nav class="nav-links"*ngIf="user.roles.includes('FACULTY')">
     <a class="nav-item nav-link" routerLink="/module-view-fa" routerLinkActive="active">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -145,7 +141,7 @@
     </a>
   </nav>
 
-  <nav class="nav-links"*ngIf="user.roles.includes('academic-coordinator')">
+  <nav class="nav-links"*ngIf="user.roles.includes('ACADEMIC-COORDINATOR')">
     <a class="nav-item nav-link" routerLink="/module-view-ac" routerLinkActive="active">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -202,7 +198,7 @@
     </a>
   </nav>
 
-  <nav class="nav-links"*ngIf="user.roles.includes('lecturer')">
+  <nav class="nav-links"*ngIf="user.roles.includes('LECTURER')">
     <a class="nav-item nav-link" routerLink="/module-view-lecturer" routerLinkActive="active">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -259,7 +255,7 @@
     </a>
   </nav>
 
-  <nav class="nav-links"*ngIf="user.roles.includes('student')">
+  <nav class="nav-links"*ngIf="user.roles.includes('STUDENT')">
     <a class="nav-item nav-link" routerLink="/module-view-student" routerLinkActive="active">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -301,7 +297,7 @@
       <h3>Profile</h3>
     </a>
 
-    <a class="nav-item" routerLink="/login">
+    <a class="nav-item" (click)="handleLogout()">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"

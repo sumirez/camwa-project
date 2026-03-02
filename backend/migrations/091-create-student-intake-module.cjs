@@ -17,7 +17,9 @@ module.exports = {
         references: {
           model: 'intake_module',
           key: 'intake_module_id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
       },
       enrollment_date: {
         type: Sequelize.DATE,

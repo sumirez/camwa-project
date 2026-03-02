@@ -2,6 +2,7 @@ import Program from '../models/Program.model.js';
 import Student from '../models/Student.model.js';
 import Lecturer from '../models/Lecturer.model.js';
 import Course from '../models/Course.model.js';
+import ProgramRegistering from '../models/ProgramRegistering.model.js';
 
 const programService = {
   createProgram: async (programData) => {
@@ -61,30 +62,45 @@ const programService = {
     }
   },
 
-  // Assign a student to a program
+  // Assign a student to a program by creating a program registration
   assignStudentToProgram: async (program_id, student_id) => {
     try {
       const program = await Program.findByPk(program_id);
       const student = await Student.findByPk(student_id);
+      
       if (!program || !student) {
         throw new Error('Program or Student not found');
       }
-      await program.addStudent(student); 
-      return { message: 'Student assigned to program successfully' };
+
+      // Create new program registration entry
+      await ProgramRegistering.create({
+        student_id: student_id,
+        program_id: program_id,
+        intake: new Date().getFullYear() // Current year as intake
+      });
+
+      return { message: 'Student registered to program successfully' };
     } catch (error) {
-      throw new Error('Error assigning student to program: ' + error.message);
+      throw new Error('Error registering student to program: ' + error.message);
     }
   },
 
-  // Assign a lecturer to a program
+  // Assign a lecturer to a program by updating their program_id
   assignLecturerToProgram: async (program_id, lecturer_id) => {
     try {
       const program = await Program.findByPk(program_id);
       const lecturer = await Lecturer.findByPk(lecturer_id);
+      
       if (!program || !lecturer) {
         throw new Error('Program or Lecturer not found');
       }
-      await program.addLecturer(lecturer); 
+
+      // Update lecturer's program_id
+      await Lecturer.update(
+        { program_id: program_id },
+        { where: { staff_id: lecturer_id } }
+      );
+
       return { message: 'Lecturer assigned to program successfully' };
     } catch (error) {
       throw new Error('Error assigning lecturer to program: ' + error.message);

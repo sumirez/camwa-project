@@ -116,6 +116,14 @@ Student.belongsToMany(IntakeModule, {
 Student.belongsTo(Iam, { foreignKey: 'acc_id' });
 Iam.hasOne(Student, { foreignKey: 'acc_id' });
 
+// Program and IntakeModule Relationship (A Program has many IntakeModules)
+Program.hasMany(IntakeModule, { foreignKey: 'program_id' });
+IntakeModule.belongsTo(Program, { foreignKey: 'program_id' });
+
+// Program and IntakeModule Relationship (A Program has many IntakeModules)
+Semester.hasMany(IntakeModule, { foreignKey: 'semster_id' });
+IntakeModule.belongsTo(Semester, { foreignKey: 'sem_id' });
+
 export {
   Student,
   Program,

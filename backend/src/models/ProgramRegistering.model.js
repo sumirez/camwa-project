@@ -4,11 +4,13 @@ import sequelize from '../common/sequelize/connect.sequelize.js';
 const ProgramRegistering = sequelize.define('ProgramRegistering', {
   student_id: {
     type: DataTypes.STRING(20),
+    primaryKey: true,
     references: { model: 'Student', key: 'student_id' },
     allowNull: false,
   },
   program_id: {
     type: DataTypes.STRING(20),
+    primaryKey: true,
     references: { model: 'Program', key: 'program_id' },
     allowNull: false,
   },
@@ -18,13 +20,7 @@ const ProgramRegistering = sequelize.define('ProgramRegistering', {
   },
 }, {
   tableName: 'program_registering',
-  timestamps: false,
-  indexes: [
-    {
-      unique: true,
-      fields: ['student_id', 'program_id'],
-    }
-  ]
+  timestamps: false
 });
 
 export default ProgramRegistering;

@@ -1,0 +1,90 @@
+/* Only styles Bootstrap cannot provide */
+
+.modules-info h1 {
+  font-size: 80px;
+  color: var(--vgu-dark-blue);
+}
+
+.border-vgu-dark-blue {
+  border: 2px solid var(--vgu-dark-blue);
+  border-radius: 50%;
+}
+
+.text-vgu-dark-blue {
+  color: var(--vgu-dark-blue);
+}
+
+
+.chart-container {
+  border: 1px solid var(--vgu-dark-blue);
+}
+
+.chart-header {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+
+  .chart-header-title {
+    grid-column: span 2;
+    font-size: 20px;
+    color: var(--vgu-dark-blue);
+    margin: 0;
+  }
+
+  label {
+    font-size: 16px;
+    color: var(--vgu-dark-blue);
+  }
+}
+
+.chart-wrapper {
+  position: relative;
+  height: 360px;
+}
+
+.student-overview-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 24px;
+  border: 1px solid var(--vgu-dark-blue);
+
+  .stat-card-text {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .stat-card-icon {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+  }
+
+  .stat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+  }
+
+  .stat-label {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--vgu-dark-blue);
+  }
+
+  .stat-number {
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--vgu-dark-blue);
+  }
+}

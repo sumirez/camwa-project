@@ -1,6 +1,7 @@
 // Import the functions you need from the SDKs you need
 export const environment = {
   production: false,
+  apiUrl: 'http://localhost:3000',
   firebaseConfig: {
     apiKey: "AIzaSyBoq4KOOID6PuFETi-SideQHX78mJvpnbY",
     authDomain: "vgu-attendance-management.firebaseapp.com",

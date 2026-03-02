@@ -1,21 +1,22 @@
 // Success Response Helper
-export const responseSuccess = (metaData = null, message = 'Success', code = 200) => {
+export const responseSuccess = (metaData = null, message = 'Success') => {
     return {
         status: 'success',
-        code: code,
+        code: 200,
         message: message,
         metaData: metaData,
-        doc: 'https://api.example.com/docs', // Updated to a more realistic documentation link
+        doc: `${process.env.API_URL}/api-docs`
     };
 };
 
 // Error Response Helper
-export const responseError = (message = 'Internal Server Error', code = 500, stack = null) => {
+export const responseError = (error, message = 'Internal Server Error') => {
+    const statusCode = error.code || 500;
     return {
         status: 'error',
-        code: code,
+        code: statusCode,
         message: message,
-        stack: stack || 'No stack available', // Added a fallback for the stack trace
-        doc: 'https://api.example.com/docs', // Added documentation link for error cases too
+        error: error.message || error,
+        doc: `${process.env.API_URL}/api-docs`
     };
 };

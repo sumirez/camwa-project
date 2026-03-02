@@ -2,7 +2,6 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-
     await queryInterface.createTable('iam', {
       acc_id: {
         type: Sequelize.STRING(100),
@@ -12,14 +11,22 @@ module.exports = {
         type: Sequelize.STRING(45),
       },
       email: {
-        type: Sequelize.STRING(45),
+        type: Sequelize.STRING(100),
+        allowNull: false,
+        unique: true,
       },
       password: {
-        type: Sequelize.STRING(45),
+        type: Sequelize.STRING(255),
+        allowNull: false,
       },
       role: {
         type: Sequelize.STRING(45),
+        allowNull: false,
       },
+      refresh_token: {
+        type: Sequelize.TEXT,
+        allowNull: true
+      }
     });
   },
   

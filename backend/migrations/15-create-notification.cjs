@@ -51,7 +51,7 @@ module.exports = {
           key: 'intake_module_id'      
         },
         onUpdate: 'CASCADE',   
-        onDelete: 'SET NULL',  
+        onDelete: 'CASCADE',  
       },
       priority: {
         type: Sequelize.INTEGER,

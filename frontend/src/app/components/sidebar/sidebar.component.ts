@@ -1,6 +1,15 @@
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { RouterModule } from "@angular/router";
+import { TokenService } from "../../services/token.service";
+import { AuthService } from "../../services/auth.service";
+
+interface User {
+  roles: string[];
+  email: string;
+  username: string;
+}
+
 @Component({
   standalone: true,
   selector: "app-sidebar",
@@ -8,31 +17,46 @@ import { RouterModule } from "@angular/router";
   styleUrl: "./sidebar.component.css",
   imports: [CommonModule, RouterModule],
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit {
   loggedIn: boolean = true;
-  roles = ['admin','faculty','student','lecturer','academic-coordinator'];
-  user = {roles:['admin']};
+  user: User = {
+    roles: [],
+    email: '',
+    username: ''
+  };
 
-  onClick(){
-    if(this.user.roles.includes('admin')){
-      this.user.roles = ['faculty'];
-      console.log(this.user.roles);
+  constructor(
+    private tokenService: TokenService,
+    private authService: AuthService
+  ) {}
+
+  ngOnInit() {
+    const decodedToken = this.tokenService.getDecodedToken();
+    if (decodedToken) {
+      this.user = {
+        roles: [decodedToken.role],
+        email: decodedToken.email,
+        username: decodedToken.username || 'User'
+      };
     }
-    else if(this.user.roles.includes('faculty')){
-      this.user.roles = ['academic-coordinator'];
-      console.log(this.user.roles);
-    }
-    else if(this.user.roles.includes('academic-coordinator')){
-      this.user.roles = ['lecturer'];
-      console.log(this.user.roles);
-    }
-    else if(this.user.roles.includes('lecturer')){
-      this.user.roles = ['student'];
-      console.log(this.user.roles);
-    }
-    else if(this.user.roles.includes('student')){
-      this.user.roles = ['admin'];
-      console.log(this.user.roles);
+  }
+
+  handleLogout() {
+    const userId = this.tokenService.getDecodedToken()?.uid;
+
+    const clearAndRedirect = () => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('role');
+      window.location.href = '/login';
+    };
+
+    if (userId) {
+      this.authService.logout(userId).subscribe({
+        next: () => clearAndRedirect(),
+        error: () => clearAndRedirect()
+      });
+    } else {
+      clearAndRedirect();
     }
   }
 }

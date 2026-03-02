@@ -1,7 +1,7 @@
 import authService from '../../src/services/auth.service.js';
 import { verifyRefreshToken, generateTokens } from '../../src/config/jwtConfig.js';
 import admin from '../../src/config/firebaseConfig.js';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import Iam from '../../src/models/Iam.model.js';
 import { sendMail } from '../../src/common/nodemailer/send-mail.nodemailer.js';
 import { UnauthorizedError, NotFoundError } from '../../src/common/helpers/error.helper.js';
@@ -9,7 +9,7 @@ import { UnauthorizedError, NotFoundError } from '../../src/common/helpers/error
 // Mocking external services
 jest.mock('../../src/config/jwtConfig.js');
 jest.mock('../../src/config/firebaseConfig.js');
-jest.mock('bcrypt');
+jest.mock('bcryptjs');
 jest.mock('../../src/models/Iam.model.js');
 jest.mock('../../src/common/nodemailer/send-mail.nodemailer.js');
 

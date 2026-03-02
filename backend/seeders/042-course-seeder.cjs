@@ -2,7 +2,8 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkDelete('course', null, {});
+    await queryInterface.sequelize.query('TRUNCATE TABLE "course" RESTART IDENTITY CASCADE;');
+
     return queryInterface.bulkInsert('course', [
       { 
         name: 'Introduction to Programming',

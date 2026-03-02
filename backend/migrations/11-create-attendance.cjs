@@ -25,7 +25,7 @@ module.exports = {
           key: 'intake_module_id'
         },
         onUpdate: 'CASCADE',
-        onDelete: 'SET NULL',
+        onDelete: 'CASCADE',
       },
       class_id: {
         type: Sequelize.STRING(36),
@@ -34,7 +34,7 @@ module.exports = {
           key: 'class_id'
         },
         onUpdate: 'CASCADE',
-        onDelete: 'SET NULL',
+        onDelete: 'CASCADE',
       },
       class_date: {
         type: Sequelize.DATE,
