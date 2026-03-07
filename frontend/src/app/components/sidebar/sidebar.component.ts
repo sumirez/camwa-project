@@ -41,6 +41,22 @@ export class SidebarComponent implements OnInit {
     }
   }
 
+  getDashboardRoute(): string {
+    if (this.user.roles.includes('ADMIN')) {
+      return '/dashboard-admin';
+    }
+    if (this.user.roles.includes('STUDENT')) {
+      return '/dashboard-student';
+    }
+    if (this.user.roles.includes('LECTURER')) {
+      return '/dashboard-lecturer';
+    }
+    if (this.user.roles.includes('FACULTY')) {
+      return '/dashboard-faculty';
+    }
+    return '/404';
+  }
+
   handleLogout() {
     const userId = this.tokenService.getDecodedToken()?.uid;
 

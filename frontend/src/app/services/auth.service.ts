@@ -32,10 +32,12 @@ export class AuthService {
     switch(role) {
       case 'ADMIN':
         return '/module-view-admin';
+      case 'FACULTY':
+        return '/module-view-fa';
       case 'LECTURER':
         return '/module-view-lecturer';
       case 'STUDENT':
-        return '/student-module-view';
+        return '/module-view-student';
       default:
         return '/login';
     }

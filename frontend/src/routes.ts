@@ -20,7 +20,8 @@ import { AccountViewAdminComponent } from "./app/pages/account-view-admin/accoun
 import { AccountDetailCreateAdminComponent } from "./app/pages/account-view-admin/account-detail-create-admin/account-detail-create-admin.component";
 import { AccountDetailModifyAdminComponent } from "./app/pages/account-view-admin/account-detail-modify-admin/account-detail-modify-admin.component";
 import { DashboardAdminComponent } from "./app/pages/dashboard-admin/dashboard-admin.component";
-
+import { DashboardStaffComponent } from "./app/pages/dashboard-staff/dashboard-staff.component";
+import { DashboardLecturerComponent } from "./app/pages/dashboard-lecturer/dashboard-lecturer.component";
 
 const routeConfig: Routes = [
   {
@@ -42,6 +43,18 @@ const routeConfig: Routes = [
   {
     path: "dashboard-admin",
     component: DashboardAdminComponent,
+    title: "Dashboard",
+    canActivate: [AuthRoute]
+  },
+  {
+    path: "dashboard-faculty",
+    component: DashboardStaffComponent,
+    title: "Dashboard",
+    canActivate: [AuthRoute]
+  },
+  {
+    path: "dashboard-lecturer",
+    component: DashboardLecturerComponent,
     title: "Dashboard",
     canActivate: [AuthRoute]
   },

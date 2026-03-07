@@ -6,7 +6,7 @@ const dashboardRouter = express.Router();
 
 dashboardRouter.get(
   '/attendance-analytics',
-  verifyTokenAndRole(['ADMIN']),
+  verifyTokenAndRole(['ADMIN', 'FACULTY']),
   dashboardController.getAttendanceAnalytics
 );
 
