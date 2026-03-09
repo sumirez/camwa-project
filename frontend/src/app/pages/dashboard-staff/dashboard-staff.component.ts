@@ -22,6 +22,8 @@ export class DashboardStaffComponent {
   totalStudents: number = 0;
   presentCount: number = 0;
   absentCount: number = 0;
+  approvedAbsentCount: number = 0;
+  pendingAbsentCount: number = 0;
 
   constructor(private dashboardService: DashboardService) {}
 
@@ -45,6 +47,11 @@ export class DashboardStaffComponent {
           (sum: number, r: any) => sum + (Number(r.total) - Number(r.present)),
           0
         );
+
+        if (!Array.isArray(meta) && meta?.requestCounts) {
+          this.approvedAbsentCount = Number(meta.requestCounts.approved_count);
+          this.pendingAbsentCount = Number(meta.requestCounts.pending_count);
+        }
 
         if (rows.length > 0 && rows[0].date) {
           this.currentYear = new Date(rows[0].date).getFullYear();

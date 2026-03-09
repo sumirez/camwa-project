@@ -50,12 +50,21 @@ const dashboardService = {
       ORDER BY p.name ASC;
     `;
 
-    const [attendanceRates, passFailByMajor] = await Promise.all([
+    const requestCountsSql = `
+      SELECT
+        COUNT(*) FILTER (WHERE status = 'approved') AS approved_count,
+        COUNT(*) FILTER (WHERE status = 'pending') AS pending_count,
+        COUNT(*) AS total_count
+      FROM attendance_request;
+    `;
+
+    const [attendanceRates, passFailByMajor, requestCounts] = await Promise.all([
       sequelize.query(attendanceSql, { type: QueryTypes.SELECT }),
-      sequelize.query(passFailSql, { type: QueryTypes.SELECT })
+      sequelize.query(passFailSql, { type: QueryTypes.SELECT }),
+      sequelize.query(requestCountsSql, { type: QueryTypes.SELECT })
     ]);
 
-    return { attendanceRates, passFailByMajor };
+    return { attendanceRates, passFailByMajor, requestCounts: requestCounts[0] };
   }
 };
 
