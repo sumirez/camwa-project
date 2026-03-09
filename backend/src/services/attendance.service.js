@@ -20,6 +20,13 @@ const attendanceService = {
         return await AttendanceRequest.findAll({ where: { student_id: studentId } });
     },
 
+    // View attendance requests by lecturer id, optionally filtered by class_id
+    viewAttendanceRequestsByLecturerId: async (lecturerId, class_id) => {
+        const where = { lecturer_id: lecturerId };
+        if (class_id) where.class_id = class_id;
+        return await AttendanceRequest.findAll({ where });
+    },
+
     // Update an attendance request by request_id
     updateAttendanceRequest: async (requestId, updatedData) => {
         return await AttendanceRequest.update(updatedData, { where: { request_id: requestId } });
@@ -43,6 +50,11 @@ const attendanceService = {
     // View attendance by student
     viewAttendanceByStudent: async (studentId) => {
         return await Attendance.findAll({ where: { student_id: studentId } });
+    },
+
+    // View attendance by multiple class IDs
+    viewAttendanceByClassIds: async (classIds) => {
+        return await Attendance.findAll({ where: { class_id: classIds } });
     },
 
     // Update attendance by attendance_id

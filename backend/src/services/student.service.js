@@ -21,6 +21,15 @@ const studentService = {
     }
   },
 
+  getAllStudentsByProgramId: async (programId) => {
+    try {
+      const students = await Student.findAll({ where: { program_id: programId } });
+      return students;
+    } catch (error) {
+      throw new Error('Error retrieving students by program id: ' + error.message);
+    }
+  },
+
   // Find a student by student_id
   findStudentById: async (student_id) => {
     try {

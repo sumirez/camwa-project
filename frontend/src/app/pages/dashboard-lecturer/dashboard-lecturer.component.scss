@@ -14,6 +14,33 @@
   color: var(--vgu-dark-blue);
 }
 
+.course-select {
+  max-width: 250px;
+  color: var(--vgu-dark-blue);
+  border-color: var(--vgu-dark-blue);
+}
+
+.card-overview {
+  margin-bottom: 16px;
+  .card-overview-title {
+    color: var(--vgu-dark-blue);
+    margin-bottom: 16px;
+  }
+
+  .students-card-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+
+    .students-card {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+    }
+  }
+}
+
 
 .chart-container {
   border: 1px solid var(--vgu-dark-blue);

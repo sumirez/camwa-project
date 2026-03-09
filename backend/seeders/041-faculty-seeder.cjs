@@ -5,15 +5,15 @@ module.exports = {
     await queryInterface.bulkDelete('facility_faculty', null, {});
     return queryInterface.bulkInsert('facility_faculty', [
       {
-        staff_id: 'STAFF003',
+        staff_id: 'FAC001',
         name: 'Alice Johnson',
-        program_id: 'PROG001',
+        program_id: 'CS001',
         account_id: 'FAC001'
       },
       {
-        staff_id: 'STAFF004',
+        staff_id: 'FAC002',
         name: 'Bob Brown',
-        program_id: 'PROG002',
+        program_id: 'IT001',
         account_id: 'FAC002'
       }
     ]);

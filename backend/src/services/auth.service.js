@@ -41,6 +41,7 @@ const authService = {
     await user.update({ refresh_token: refreshToken });
 
     return {
+      userId: user.acc_id,
       accessToken,
       refreshToken,
       role: user.role,

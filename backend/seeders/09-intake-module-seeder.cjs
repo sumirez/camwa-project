@@ -7,48 +7,48 @@ module.exports = {
 
     return queryInterface.bulkInsert('intake_module', [
       {
-        intake_module_id: 'IM001',
+        intake_module_id: 'WD2023',
         name: 'Web Development Module',
         capacity: 30,
         ects: 5,
-        lecturer_id: 'STAFF001', // Must exist in 'lecturer' table
-        program_id: 'PROG001',   // Must exist in 'program' table
-        course_id: 1,            // Must exist in 'course' table
-        intake: 2023,            // This matches your migration column name
-        semester_id: 'SEM001'    // Must exist in 'semester' table
+        lecturer_id: 'LEC001',
+        program_id: 'CS001',
+        course_id: 1,
+        intake: 2023,
+        semester_id: 'SUMMER2023'
       },
       {
-        intake_module_id: 'IM002',
+        intake_module_id: 'DB2023',
         name: 'Database Module',
         capacity: 30,
         ects: 5,
-        lecturer_id: 'STAFF002',
-        program_id: 'PROG002',
+        lecturer_id: 'LEC002',
+        program_id: 'IT001',
         course_id: 2,
         intake: 2023,
-        semester_id: 'SEM001'
+        semester_id: 'SUMMER2023'
       },
       {
-        intake_module_id: 'IM003',
-        name: 'Advanced Programming',
+        intake_module_id: 'AP2023',
+        name: 'Advanced Mathematics',
         capacity: 25,
         ects: 6,
-        lecturer_id: 'STAFF001',
-        program_id: 'PROG001',
+        lecturer_id: 'LEC003',
+        program_id: 'CS001',
         course_id: 1,
         intake: 2023,
-        semester_id: 'SEM001'
+        semester_id: 'SUMMER2023'
       },
       {
-        intake_module_id: 'IM004',
+        intake_module_id: 'SA2023',
         name: 'System Analysis',
         capacity: 25,
         ects: 6,
-        lecturer_id: 'STAFF002',
-        program_id: 'PROG002',
+        lecturer_id: 'LEC004',
+        program_id: 'IT001',
         course_id: 2,
         intake: 2023,
-        semester_id: 'SEM001'
+        semester_id: 'SUMMER2023'
       }
     ]);
   },

@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DashboardService } from 'src/app/services/dashboard.service';
 import { Chart } from 'chart.js/auto';
 
-type ViewMode = 'daily' | 'weekly' | 'monthly';
+import { StudentService } from 'src/app/services/student.service';
+import { CourseService } from 'src/app/services/course.service';
+import { ClassService } from 'src/app/services/class.service';
+import { AttendanceService } from 'src/app/services/attendance.service';
 
 @Component({
   selector: 'dashboard-lecturer',
@@ -13,109 +15,165 @@ type ViewMode = 'daily' | 'weekly' | 'monthly';
   templateUrl: './dashboard-lecturer.component.html',
   styleUrl: './dashboard-lecturer.component.scss'
 })
-export class DashboardLecturerComponent {
-  chart: Chart | null = null;
+export class DashboardLecturerComponent implements OnInit, OnDestroy {
   barChart: Chart | null = null;
-  rawData: any[] = [];
-  viewMode: ViewMode = 'daily';
-  currentYear: number = new Date().getFullYear();
+
   totalStudents: number = 0;
   presentCount: number = 0;
   absentCount: number = 0;
+  approvedAbsentCount: number = 0;
+  pendingAbsentCount: number = 0;
 
-  constructor(private dashboardService: DashboardService) {}
+  courses: any[] = [];
+  classes: any[] = [];
+  selectedCourseId: string = '';
+  lecturerId: string = '';
+
+  constructor(
+    private studentService: StudentService,
+    private courseService: CourseService,
+    private classService: ClassService,
+    private attendanceService: AttendanceService
+  ) {}
 
   ngOnInit() {
-    this.dashboardService.getAttendanceAnalytics().subscribe({
+    this.lecturerId = localStorage.getItem('userId') || '';
+
+    this.courseService.getCoursesByLecturerId(this.lecturerId).subscribe({
       next: (response: any) => {
-        const meta = response?.metaData;
-        const rows = Array.isArray(meta) ? meta : meta?.attendanceRates ?? [];
-        const passFailRows = Array.isArray(meta) ? [] : meta?.passFailByMajor ?? [];
-        this.rawData = rows;
+        this.courses = response.metaData;
+      },
+      error: (err) => console.error('Failed to load courses:', err)
+    });
 
-        this.totalStudents = passFailRows.reduce(
-          (sum: number, r: any) => sum + Number(r.total_students),
-          0
-        );
-        this.presentCount = rows.reduce(
-          (sum: number, r: any) => sum + Number(r.present),
-          0
-        );
-        this.absentCount = rows.reduce(
-          (sum: number, r: any) => sum + (Number(r.total) - Number(r.present)),
-          0
-        );
+    this.classService.getClassesByLecturerId(this.lecturerId).subscribe({
+      next: (response: any) => {
+        this.classes = response.metaData;
+        this.loadAttendanceForBarChart();
+      },
+      error: (err) => console.error('Failed to load classes:', err)
+    });
 
-        if (rows.length > 0 && rows[0].date) {
-          this.currentYear = new Date(rows[0].date).getFullYear();
+    this.loadStudents();
+    this.loadAttendanceRequests();
+  }
+
+  onCourseSelect(courseId: string) {
+    this.selectedCourseId = courseId;
+    this.loadStudents();
+    this.loadAttendanceRequests();
+    this.loadAttendanceForBarChart();
+  }
+
+  private getFilteredClasses(): any[] {
+    if (!this.selectedCourseId) return this.classes;
+    const selected = this.courses.find((c: any) => String(c.course_id) === String(this.selectedCourseId));
+    if (!selected) return this.classes;
+    return this.classes.filter((cls: any) => cls.intake_module_id && selected.intake_module_id
+      ? cls.intake_module_id === selected.intake_module_id
+      : true
+    );
+  }
+
+  private loadStudents() {
+    if (this.selectedCourseId) {
+      const selected = this.courses.find((c: any) => String(c.course_id) === String(this.selectedCourseId));
+      if (selected?.program_id) {
+        this.studentService.getStudentsByProgramId(selected.program_id).subscribe({
+          next: (response: any) => {
+            this.totalStudents = response.metaData.length;
+          },
+          error: (err) => console.error('Failed to load students:', err)
+        });
+        return;
+      }
+    }
+    this.studentService.getStudents().subscribe({
+      next: (response: any) => {
+        this.totalStudents = response.metaData.length;
+      },
+      error: (err) => console.error('Failed to load students:', err)
+    });
+  }
+
+  private loadAttendanceRequests() {
+    this.attendanceService.getAttendanceRequestsByLecturerId(this.lecturerId).subscribe({
+      next: (response: any) => {
+        let requests = response.metaData;
+
+        if (this.selectedCourseId) {
+          const filteredClassIds = this.getFilteredClasses().map((c: any) => c.class_id);
+          requests = requests.filter((r: any) => filteredClassIds.includes(r.class_id));
         }
 
-        this.buildChart();
-        this.buildBarChart(passFailRows);
+        this.approvedAbsentCount = requests.filter((r: any) => r.status === 'approved').length;
+        this.pendingAbsentCount = requests.filter((r: any) => r.status === 'pending').length;
+        this.absentCount = requests.length;
       },
-      error: (err) => {
-        console.error('Failed to load attendance analytics:', err);
+      error: (err) => console.error('Failed to load attendance requests:', err)
+    });
+  }
+
+  private loadAttendanceForBarChart() {
+    const filteredClasses = this.getFilteredClasses();
+    const classIds = filteredClasses.map((cls: any) => cls.class_id);
+
+    if (!classIds.length) {
+      this.presentCount = 0;
+      if (this.barChart) {
+        this.barChart.destroy();
+        this.barChart = null;
       }
+      return;
+    }
+
+    this.attendanceService.getAttendanceByClassIds(classIds).subscribe({
+      next: (response: any) => {
+        const records = response.metaData || response;
+
+        const countsByClass: { [key: string]: { present: number; absent: number } } = {};
+        let totalPresent = 0;
+
+        for (const record of records) {
+          const classId = record.class_id;
+          const status = record.attendance_status;
+
+          if (!countsByClass[classId]) {
+            countsByClass[classId] = { present: 0, absent: 0 };
+          }
+
+          if (status === 'present' || status === 'late') {
+            countsByClass[classId].present += 1;
+            totalPresent += 1;
+          } else if (status === 'absent' || status === 'excused') {
+            countsByClass[classId].absent += 1;
+          }
+        }
+
+        this.presentCount = totalPresent;
+
+        const chartData = filteredClasses.map((cls: any) => {
+          const labelDate = cls.class_date ? new Date(cls.class_date).toLocaleDateString('en-US', { month: 'short', day: '2-digit' }) : '';
+          const label = labelDate ? `Class ${cls.class_number} - ${labelDate}` : `Class ${cls.class_number}`;
+          const counts = countsByClass[cls.class_id] || { present: 0, absent: 0 };
+          return {
+            label,
+            present: counts.present,
+            absent: counts.absent
+          };
+        });
+
+        this.buildBarChart(chartData);
+      },
+      error: (err) => console.error('Failed to load attendance for bar chart:', err)
     });
   }
 
   ngOnDestroy() {
-    if (this.chart) {
-      this.chart.destroy();
-      this.chart = null;
-    }
     if (this.barChart) {
       this.barChart.destroy();
       this.barChart = null;
     }
-  }
-
-  onViewChange() {
-    if (this.rawData.length) {
-      this.buildChart();
-    }
-  }
-
-  private buildChart() {
-    if (this.chart) {
-      this.chart.destroy();
-      this.chart = null;
-    }
-
-    const { labels, datasets } = this.aggregateData();
-
-    this.chart = new Chart('attendanceChart', {
-      type: 'line',
-      data: {
-        labels,
-        datasets
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          y: {
-            min: 0,
-            max: 100,
-            title: {
-              display: true,
-              text: 'Rate (%)'
-            }
-          },
-          x: {
-            title: {
-              display: true,
-              text: 'Date'
-            }
-          }
-        },
-        plugins: {
-          legend: {
-            position: 'bottom'
-          }
-        }
-      }
-    });
   }
 
   private buildBarChart(data: any[]) {
@@ -124,136 +182,30 @@ export class DashboardLecturerComponent {
       this.barChart = null;
     }
 
-    if (!data || data.length === 0) {
-      return;
-    }
+    if (!data || data.length === 0) return;
 
-    const majors = data.map((r) => r.major);
-    const passPercentages = data.map((r) => Number(r.pass_percentage));
-    const failPercentages = data.map((r) => Number(r.fail_percentage));
+    const labels = data.map((r) => r.label);
+    const presentCounts = data.map((r) => r.present);
+    const absentCounts = data.map((r) => r.absent);
 
     this.barChart = new Chart('passFailChart', {
       type: 'bar',
       data: {
-        labels: majors,
+        labels,
         datasets: [
-          {
-            label: 'Pass (≥75%)',
-            data: passPercentages,
-            backgroundColor: '#0baae8'
-          },
-          {
-            label: 'Fail (<75%)',
-            data: failPercentages,
-            backgroundColor: '#ec1025'
-          }
+          { label: 'Present', data: presentCounts, backgroundColor: '#0baae8' },
+          { label: 'Absent', data: absentCounts, backgroundColor: '#ec1025' }
         ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         scales: {
-          y: {
-            min: 0,
-            max: 100,
-            title: {
-              display: true,
-              text: 'Student Percentage (%)'
-            }
-          },
-          x: {
-            title: {
-              display: true,
-              text: 'Major'
-            }
-          }
+          y: { beginAtZero: true, title: { display: true, text: 'Number of Students' } },
+          x: { title: { display: true, text: 'Class' } }
         },
-        plugins: {
-          legend: {
-            position: 'bottom'
-          }
-        }
+        plugins: { legend: { position: 'bottom' } }
       }
     });
-  }
-
-  private aggregateData(): { labels: string[]; datasets: any[] } {
-    if (!this.rawData.length) {
-      return { labels: [], datasets: [] };
-    }
-
-    const groupMap = new Map<string, { label: string; major: string; rates: number[] }>();
-    const labelsInOrder: string[] = [];
-
-    for (const row of this.rawData) {
-      const date = new Date(row.date);
-      const major = row.major;
-      const rate = typeof row.rate === 'number' ? row.rate : Number(row.rate);
-
-      const label = this.getLabelForDate(date, this.viewMode);
-
-      if (!labelsInOrder.includes(label)) {
-        labelsInOrder.push(label);
-      }
-
-      const key = `${label}__${major}`;
-      const existing = groupMap.get(key);
-
-      if (existing) {
-        existing.rates.push(rate);
-      } else {
-        groupMap.set(key, { label, major, rates: [rate] });
-      }
-    }
-
-    const majors = Array.from(
-      new Set(Array.from(groupMap.values()).map((g) => g.major))
-    );
-
-    const colors = ['#0baae8', '#ec1025', '#0d2240', '#bdbbbb', '#656663'];
-
-    const datasets = majors.map((major, index) => {
-      const color = colors[index % colors.length];
-
-      const data = labelsInOrder.map((label) => {
-        const key = `${label}__${major}`;
-        const group = groupMap.get(key);
-
-        if (!group) {
-          return null;
-        }
-
-        const sum = group.rates.reduce((acc, r) => acc + r, 0);
-        return sum / group.rates.length;
-      });
-
-      return {
-        label: major,
-        data,
-        borderColor: color,
-        backgroundColor: color,
-        tension: 0.2
-      };
-    });
-
-    return { labels: labelsInOrder, datasets };
-  }
-
-  private getLabelForDate(date: Date, mode: ViewMode): string {
-    const monthLabel = date.toLocaleString('en-US', { month: 'short' });
-    const day = date.getDate();
-
-    if (mode === 'daily') {
-      const dayLabel = day.toString().padStart(2, '0');
-      return `${monthLabel} ${dayLabel}`;
-    }
-
-    if (mode === 'weekly') {
-      const weekOfMonth = Math.ceil(day / 7);
-      return `${monthLabel} W${weekOfMonth}`;
-    }
-
-    // monthly
-    return monthLabel;
   }
 }

@@ -30,6 +30,19 @@ const courseManagement = {
         }
     },
 
+    // View Courses by Lecturer (Lecturer)
+    viewCoursesByLecturer: async (req, res, next) => {
+        try {
+            const lecturerId = req.params.lecturerId;
+            const result = await courseService.viewCoursesByLecturer(lecturerId);
+            const resData = responseSuccess(result, 'Courses retrieved successfully');
+            res.status(resData.code).json(resData);
+        } catch (error) {
+            const resError = responseError(error);
+            res.status(resError.code).json(resError);
+        }
+    },
+
     // Assign Lecturer to Intake Module (Faculty Assistant only)
     assignLecturerToIntakeModule: async (req, res, next) => {
         try {

@@ -62,6 +62,7 @@ export class LoginPageComponent {
       next: (response) => {
         localStorage.setItem('token', response.metaData.accessToken);
         localStorage.setItem('role', response.metaData.role);
+        localStorage.setItem('userId', response.metaData.userId);
         
         const defaultRoute = this.authService.getDefaultRoute();
         this.router.navigate([defaultRoute]);

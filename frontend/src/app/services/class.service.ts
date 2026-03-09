@@ -4,8 +4,8 @@ import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 @Injectable({ providedIn: 'root' })
-export class StudentService {
-  private apiUrl = `${environment.apiUrl}/api/student`;
+export class ClassService {
+  private apiUrl = `${environment.apiUrl}/api/class`;
 
   constructor(private http: HttpClient) {}
 
@@ -14,11 +14,7 @@ export class StudentService {
     return new HttpHeaders().set('Authorization', `Bearer ${token}`);
   }
 
-  getStudents(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/all`, { headers: this.getAuthHeaders() });
-  }
-
-  getStudentsByProgramId(programId: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/${programId}`, { headers: this.getAuthHeaders() });
+  getClassesByLecturerId(lecturerId: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/lecturer/${lecturerId}`, { headers: this.getAuthHeaders() });
   }
 }

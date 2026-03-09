@@ -15,18 +15,21 @@ const attendanceManagement = {
         }
     },
 
-    // View Attendance Records by Class or Student
+    // View Attendance Records by Class, Module, or Student
     viewAttendance: async (req, res, next) => {
         try {
-            const { moduleId, studentId } = req.query;
-            if (!moduleId && !studentId) {
-                return res.status(400).json({ message: 'Either classId or studentId must be provided' });
+            const { moduleId, studentId, classIds } = req.query;
+            if (!moduleId && !studentId && !classIds) {
+                return res.status(400).json({ message: 'Either moduleId, studentId, or classIds must be provided' });
             }
             let result;
             if (moduleId) {
                 result = await attendanceService.viewAttendanceByModule(moduleId);
             } else if (studentId) {
                 result = await attendanceService.viewAttendanceByStudent(studentId);
+            } else if (classIds) {
+                const ids = classIds.split(',');
+                result = await attendanceService.viewAttendanceByClassIds(ids);
             }
             const resData = responseSuccess(result, 'Attendance records retrieved successfully');
             res.status(resData.code).json(resData);
@@ -116,6 +119,14 @@ const attendanceManagement = {
             const resError = responseError(error);
             res.status(resError.code).json(resError);
         }
+    },
+
+    viewAttendanceRequestsByLecturerId: async (req, res, next) => {
+        const lecturerId = req.params.lecturerId;
+        const { class_id } = req.query;
+        const result = await attendanceService.viewAttendanceRequestsByLecturerId(lecturerId, class_id);
+        const resData = responseSuccess(result, 'Attendance requests retrieved successfully');
+        res.status(resData.code).json(resData);
     },
 };
 

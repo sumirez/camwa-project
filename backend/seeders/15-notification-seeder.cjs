@@ -11,7 +11,7 @@ module.exports = {
         notification_text: 'Important announcement for your module',
         notification_date: new Date(),
         status: 'unread',
-        module_id: 'IM001',
+        module_id: 'WD2023',
         priority: 1,
         is_critical: true,
         read_by_receiver: false

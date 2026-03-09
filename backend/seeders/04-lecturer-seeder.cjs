@@ -7,24 +7,24 @@ module.exports = {
 
     return queryInterface.bulkInsert('lecturer', [
       {
-        staff_id: 'STAFF001',
+        staff_id: 'LEC001',
         name: 'John Doe',
-        program_id: 'PROG001',
+        program_id: 'CS001',
       },
       {
-        staff_id: 'STAFF002',
+        staff_id: 'LEC002',
         name: 'Jane Smith',
-        program_id: 'PROG002',
+        program_id: 'IT001',
       },
       {
-        staff_id: 'STAFF003',
+        staff_id: 'LEC003',
         name: 'Robert Brown',
-        program_id: 'PROG001',
+        program_id: 'CS001',
       },
       {
-        staff_id: 'STAFF004',
+        staff_id: 'LEC004',
         name: 'Emily Davis',
-        program_id: 'PROG002',
+        program_id: 'IT001',
       }
     ]);
   },

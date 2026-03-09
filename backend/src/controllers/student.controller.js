@@ -22,6 +22,16 @@ const studentController = {
     }
   },
 
+  getAllStudentsByProgramId: async (req, res) => {
+    const { programId } = req.params;
+    try {
+      const students = await studentService.getAllStudentsByProgramId(programId);
+      res.status(200).json(responseSuccess(students, 'Students retrieved successfully'));
+    } catch (error) {
+      res.status(500).json(responseError(error.message, 500));
+    }
+  },
+
   // Find a student by student_id
   findStudentById: async (req, res) => {
     const { student_id } = req.params;

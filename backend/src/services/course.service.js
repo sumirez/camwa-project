@@ -23,10 +23,7 @@ const courseService = {
 
     // View courses by lecturer (Lecturer)
     viewCoursesByLecturer: async (lecturerId) => {
-        return await IntakeModule.findAll({
-            where: { lecturer_id: lecturerId },
-            include: [Course]
-        });
+        return await Course.findAll({ where: { lecturer_id: lecturerId } });
     },
 
     // View intake modules by student (Student)

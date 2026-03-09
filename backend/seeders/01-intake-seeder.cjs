@@ -5,10 +5,10 @@ module.exports = {
     await queryInterface.bulkDelete('intake', null, {});
     return queryInterface.bulkInsert('intake', [
       {
-        year: '2023'
+        year: '2022'
       },
       {
-        year: '2024'
+        year: '2023'
       }
     ]);
   },

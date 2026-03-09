@@ -21,5 +21,5 @@ courseRouter.post('/:intakeModuleId/classes', verifyTokenAndRole(['ADMIN', 'facu
 
 // Export Intake Module Report (Faculty Assistant only)
 courseRouter.get('/:intakeModuleId/export-report', verifyTokenAndRole(['ADMIN', 'faculty_assistant']), courseController.exportIntakeModuleReport);
-
+courseRouter.get('/:lecturerId', verifyTokenAndRole(['LECTURER', 'FACULTY', 'ADMIN']), courseController.viewCoursesByLecturer);
 export default courseRouter;
