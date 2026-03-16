@@ -44,9 +44,20 @@ const iamController = {
 
   deleteUser: async (req, res) => {
     try {
-      const { accId } = req.params;
-      await accountService.deleteUser(accId);
+      const { iamId } = req.params;
+      await accountService.deleteUser(iamId);
       res.status(200).json(responseSuccess(null, 'User deleted successfully'));
+    } catch (error) {
+      res.status(500).json(responseError(error.message, 500));
+    }
+  },
+
+  changePassword: async (req, res) => {
+    try {
+      const { iamId } = req.params;
+      const { currentPassword, newPassword } = req.body;
+      const result = await accountService.changePassword(iamId, currentPassword, newPassword);
+      res.status(200).json(responseSuccess(result, 'Password changed successfully'));
     } catch (error) {
       res.status(500).json(responseError(error.message, 500));
     }

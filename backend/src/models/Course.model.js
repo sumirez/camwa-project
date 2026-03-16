@@ -1,14 +1,14 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../common/sequelize/connect.sequelize.js';
 
-
-const Lecturer = sequelize.define('Lecturer', {
-  lecturer_id: {
+const Course = sequelize.define('Course', {
+  course_id: {
     type: DataTypes.STRING(20),
     primaryKey: true,
+    allowNull: false,
   },
   name: {
-    type: DataTypes.STRING(50),
+    type: DataTypes.STRING(100),
     allowNull: false,
   },
   program_id: {
@@ -16,13 +16,15 @@ const Lecturer = sequelize.define('Lecturer', {
     allowNull: false,
     references: { model: 'Program', key: 'program_id' },
   },
-  iam_id: {
-    type: DataTypes.STRING(20),
-    references: { model: 'Iam', key: 'iam_id' },
+  curriculum_year: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
   }
 }, {
-  timestamps: false,
-  tableName: 'lecturer'
+  tableName: 'course',
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
 });
 
-export default Lecturer;
+export default Course;

@@ -1,8 +1,6 @@
 import Program from '../models/Program.model.js';
 import Student from '../models/Student.model.js';
 import Lecturer from '../models/Lecturer.model.js';
-import Course from '../models/Course.model.js';
-import ProgramRegistering from '../models/ProgramRegistering.model.js';
 
 const programService = {
   createProgram: async (programData) => {

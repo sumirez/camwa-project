@@ -1,5 +1,7 @@
 import express from 'express';
 import iamController from '../controllers/accountManagement.controller.js';
+import studentController from '../controllers/student.controller.js';
+import lecturerController from '../controllers/lecturerManagement.controller.js';
 import { verifyTokenAndRole } from '../middleware/authMiddleware.js';
 import upload from '../middleware/uploadMiddleware.js';
 import multer from 'multer';
@@ -26,7 +28,7 @@ accountRouter.post(
   '/create-students-from-excel',
   verifyTokenAndRole(['ADMIN']),
   upload.single('file'), // Changed field name to 'file' as it's a common default
-  iamController.createStudentsFromExcel
+  studentController.createStudentsFromExcel
 );
 
 // Alternative endpoint that can accept any field name - will use the first file it finds
@@ -72,7 +74,7 @@ accountRouter.post(
       next();
     });
   },
-  iamController.createStudentsFromExcel
+  studentController.createStudentsFromExcel
 );
 accountRouter.post(
   '/create-students-from-default-excel',
@@ -83,13 +85,13 @@ accountRouter.post(
     req.file = { path: defaultExcelPath };
     next();
   },
-  iamController.createStudentsFromExcel
+  studentController.createStudentsFromExcel
 );
 accountRouter.post(
   '/create-lecturers-from-excel',
   verifyTokenAndRole(['ADMIN']),
   upload.single('file'),
-  iamController.createLecturersFromExcel
+  lecturerController.createLecturersFromExcel
 );
 
 // Alternative endpoint for lecturers that can accept any field name
@@ -135,7 +137,7 @@ accountRouter.post(
       next();
     });
   },
-  iamController.createLecturersFromExcel
+  lecturerController.createLecturersFromExcel
 );
 
 // Endpoint for using a default lecturer Excel file
@@ -148,7 +150,7 @@ accountRouter.post(
     req.file = { path: defaultExcelPath };
     next();
   },
-  iamController.createLecturersFromExcel
+  lecturerController.createLecturersFromExcel
 );
 accountRouter.put('/:iamId', iamController.updateUser);
 accountRouter.delete('/:iamId', iamController.deleteUser);

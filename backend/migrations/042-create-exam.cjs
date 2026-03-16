@@ -8,12 +8,12 @@ module.exports = {  async up(queryInterface, Sequelize) {
         primaryKey: true,
         autoIncrement: true
       },
-      module_id: {
+      intake_module_id: {
         type: Sequelize.STRING(36),
         allowNull: false,
         references: {
-          model: 'module',
-          key: 'module_id'
+          model: 'intake_module',
+          key: 'intake_module_id'
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
@@ -62,8 +62,8 @@ module.exports = {  async up(queryInterface, Sequelize) {
       });
       
       await queryInterface.addIndex('exam', {
-        fields: ['module_id'], 
-        name: 'exam_module_id_idx'
+        fields: ['intake_module_id'], 
+        name: 'exam_intake_module_id_idx'
       });
       
       await queryInterface.addIndex('exam', {
@@ -82,7 +82,7 @@ module.exports = {  async up(queryInterface, Sequelize) {
       
       // Drop the indexes
       await queryInterface.removeIndex('exam', 'exam_student_id_idx');
-      await queryInterface.removeIndex('exam', 'exam_module_id_idx');
+      await queryInterface.removeIndex('exam', 'exam_intake_module_id_idx');
       await queryInterface.removeIndex('exam', 'exam_is_eligible_idx');
     } catch (error) {
       console.error('Error removing indexes or triggers:', error);

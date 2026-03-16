@@ -7,14 +7,12 @@ module.exports = {
       {
         staff_id: 'FAC001',
         name: 'Alice Johnson',
-        program_id: 'CS001',
-        account_id: 'FAC001'
+        program_id: 'CS001'
       },
       {
         staff_id: 'FAC002',
         name: 'Bob Brown',
-        program_id: 'IT001',
-        account_id: 'FAC002'
+        program_id: 'IT001'
       }
     ]);
   },

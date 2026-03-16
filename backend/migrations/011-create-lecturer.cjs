@@ -1,6 +1,7 @@
 'use strict';
 
-module.exports = {  up: async (queryInterface, Sequelize) => {
+module.exports = {
+  up: async (queryInterface, Sequelize) => {
 
     await queryInterface.createTable('lecturer', {
       lecturer_id: {
@@ -14,11 +15,21 @@ module.exports = {  up: async (queryInterface, Sequelize) => {
       program_id: {
         type: Sequelize.STRING(20),
         references: {
-          model: 'program',      
-          key: 'program_id'      
+          model: 'program',
+          key: 'program_id'
         },
-        onUpdate: 'CASCADE',     
-        onDelete: 'SET NULL',     
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL',
+      },
+      iam_id: {
+        type: Sequelize.STRING(20),
+        allowNull: false,
+        references: {
+          model: 'iam',
+          key: 'iam_id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
       },
     });
   },

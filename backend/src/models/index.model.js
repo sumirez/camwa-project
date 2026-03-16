@@ -10,10 +10,13 @@ import Module from './Module.model.js';
 import Exam from './Exam.model.js';
 import ModuleRegistration from './ModuleRegistration.model.js';
 import ImageAsset from './ImageAsset.model.js';
+import Course from './Course.model.js';
+import IntakeModule from './IntakeModule.model.js';
+import Class from './Class.model.js';
+import ProgramRegistering from './ProgramRegistering.model.js';
+import StudentIntakeModule from './StudentIntakeModule.model.js';
 
-// Define Associations
-
-// 1. Program and Student Relationship (Many Students belong to one Program)
+// Define Associations after all models are importedent Relationship (Many Students belong to one Program)
 Program.hasMany(Student, { foreignKey: 'program_id' });
 Student.belongsTo(Program, { foreignKey: 'program_id' });
 
@@ -38,16 +41,16 @@ Student.hasMany(AttendanceRequest, { foreignKey: 'student_id' });
 AttendanceRequest.belongsTo(Student, { foreignKey: 'student_id' });
 
 // 9. Exam and Module Relationship (An Exam belongs to one Module)
-Exam.belongsTo(Module, { foreignKey: 'module_id' });
-Module.hasMany(Exam, { foreignKey: 'module_id' });
+// Exam.belongsTo(Module, { foreignKey: 'module_id' });
+// Module.hasMany(Exam, { foreignKey: 'module_id' });
 
 // 10. Iam and Student (One-to-One) - Represents student's account
 Student.belongsTo(Iam, { foreignKey: 'student_id', targetKey: 'username' });
 Iam.hasOne(Student, { foreignKey: 'student_id', sourceKey: 'username' });
 
 // 11. Exam model relationships
-Module.hasMany(Exam, { foreignKey: 'module_id' });
-Exam.belongsTo(Module, { foreignKey: 'module_id' });
+// Module.hasMany(Exam, { foreignKey: 'module_id' });
+// Exam.belongsTo(Module, { foreignKey: 'module_id' });
 
 Student.hasMany(Exam, { foreignKey: 'student_id' });
 Exam.belongsTo(Student, { foreignKey: 'student_id' });
@@ -56,16 +59,57 @@ Exam.belongsTo(Student, { foreignKey: 'student_id' });
 Iam.hasMany(ImageAsset, { foreignKey: 'username', sourceKey: 'username' });
 ImageAsset.belongsTo(Iam, { foreignKey: 'username', targetKey: 'username' });
 
-// Program and IntakeModule Relationship (A Program has many IntakeModules)
-Program.hasMany(IntakeModule, { foreignKey: 'program_id' });
+// IntakeModule relationships
 IntakeModule.belongsTo(Program, { foreignKey: 'program_id' });
+Program.hasMany(IntakeModule, { foreignKey: 'program_id' });
 
-// Program and IntakeModule Relationship (A Program has many IntakeModules)
-Semester.hasMany(IntakeModule, { foreignKey: 'semster_id' });
-IntakeModule.belongsTo(Semester, { foreignKey: 'sem_id' });
+IntakeModule.belongsTo(Course, { foreignKey: 'course_id' });
+Course.hasMany(IntakeModule, { foreignKey: 'course_id' });
+
+IntakeModule.belongsTo(Lecturer, { foreignKey: 'lecturer_id' });
+Lecturer.hasMany(IntakeModule, { foreignKey: 'lecturer_id' });
+
+IntakeModule.belongsTo(Semester, { foreignKey: 'semester_id' });
+Semester.hasMany(IntakeModule, { foreignKey: 'semester_id' });
+
+IntakeModule.belongsTo(Intake, { foreignKey: 'intake', targetKey: 'year' });
+Intake.hasMany(IntakeModule, { foreignKey: 'intake', sourceKey: 'year' });
+
+// Attendance and IntakeModule
+Attendance.belongsTo(IntakeModule, { foreignKey: 'intake_module_id' });
+IntakeModule.hasMany(Attendance, { foreignKey: 'intake_module_id' });
+
+// AttendanceRequest and IntakeModule
+AttendanceRequest.belongsTo(IntakeModule, { foreignKey: 'intake_module_id' });
+IntakeModule.hasMany(AttendanceRequest, { foreignKey: 'intake_module_id' });
+
+// Class and IntakeModule
+Class.belongsTo(IntakeModule, { foreignKey: 'intake_module_id' });
+IntakeModule.hasMany(Class, { foreignKey: 'intake_module_id' });
+
+// Exam and IntakeModule
+Exam.belongsTo(IntakeModule, { foreignKey: 'intake_module_id' });
+IntakeModule.hasMany(Exam, { foreignKey: 'intake_module_id' });
+
+// ModuleRegistration and IntakeModule
+ModuleRegistration.belongsTo(IntakeModule, { foreignKey: 'intake_module_id' });
+IntakeModule.hasMany(ModuleRegistration, { foreignKey: 'intake_module_id' });
+
+// ProgramRegistering associations
+ProgramRegistering.belongsTo(Student, { foreignKey: 'student_id' });
+Student.hasMany(ProgramRegistering, { foreignKey: 'student_id' });
+ProgramRegistering.belongsTo(Program, { foreignKey: 'program_id' });
+Program.hasMany(ProgramRegistering, { foreignKey: 'program_id' });
+
+// StudentIntakeModule associations
+StudentIntakeModule.belongsTo(Student, { foreignKey: 'student_id' });
+Student.hasMany(StudentIntakeModule, { foreignKey: 'student_id' });
+StudentIntakeModule.belongsTo(IntakeModule, { foreignKey: 'intake_module_id' });
+IntakeModule.hasMany(StudentIntakeModule, { foreignKey: 'intake_module_id' });
 
 export {
-  Student,  Program,
+  Student,
+  Program,
   Intake,
   Semester,
   Lecturer,
@@ -76,4 +120,7 @@ export {
   Exam,
   ModuleRegistration,
   ImageAsset,
+  Course,
+  IntakeModule,
+  Class
 };

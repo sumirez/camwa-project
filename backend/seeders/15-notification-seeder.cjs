@@ -3,18 +3,17 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.bulkDelete('notification', null, {});
+    
+    // We need a valid request_id for the notification.
+    // Assuming request_id 1 exists from attendance_request seeder.
     return queryInterface.bulkInsert('notification', [
       {
         sender_id: 'ADMIN001',
         receiver_id: 'STU001',
-        notification_type: 'MODULE_ANNOUNCEMENT',
-        notification_text: 'Important announcement for your module',
-        notification_date: new Date(),
+        notification_type: 'new_request',
+        request_id: 1,
         status: 'unread',
-        module_id: 'WD2023',
-        priority: 1,
-        is_critical: true,
-        read_by_receiver: false
+        created_at: new Date()
       }
     ]);
   },

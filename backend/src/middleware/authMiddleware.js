@@ -1,12 +1,8 @@
 import jwt from 'jsonwebtoken';
 import tokenBlacklistService from '../services/tokenBlacklist.service.js';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
-
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 export const authenticateJWT = async (req, res, next) => {
-  const token = req.headers.authorization?.split(' ')[1];
   const token = req.headers.authorization?.split(' ')[1];
 
   if (!token) {
@@ -35,7 +31,6 @@ export const authenticateJWT = async (req, res, next) => {
 
 export const verifyTokenAndRole = (requiredRoles) => {
   return async (req, res, next) => {
-    const token = req.headers.authorization?.split(' ')[1];
     const token = req.headers.authorization?.split(' ')[1];
 
     if (!token) {

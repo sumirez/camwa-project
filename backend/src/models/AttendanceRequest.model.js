@@ -17,10 +17,10 @@ const AttendanceRequest = sequelize.define('AttendanceRequest', {
     references: { model: 'Student', key: 'student_id' },
     allowNull: false,
   },
-  module_id: {
+  intake_module_id: {
     type: DataTypes.STRING(36),
     allowNull: false,
-    references: { model: 'Module', key: 'module_id' },
+    references: { model: 'IntakeModule', key: 'intake_module_id' },
   },
   request_status: {
     type: DataTypes.ENUM('pending', 'approved', 'rejected'),
@@ -59,7 +59,7 @@ const AttendanceRequest = sequelize.define('AttendanceRequest', {
   indexes: [
     { fields: ['attendance_id'] },
     { fields: ['student_id'] },
-    { fields: ['module_id'] },
+    { fields: ['intake_module_id'] },
     { fields: ['request_status'] },
     // Composite index for the common query in requestAttendanceCorrection
     { fields: ['attendance_id', 'student_id', 'request_status'] }

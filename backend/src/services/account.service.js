@@ -1,6 +1,6 @@
 import Iam from '../models/Iam.model.js';
 import ImageAsset from '../models/ImageAsset.model.js';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 
 const accountService = {

@@ -7,7 +7,7 @@ module.exports = {
       {
         ac_id: 'sonll',
         name: 'Le Lam Son',
-        program_id: 'CSE',
+        program_id: 'CS001',
         current_role: 'AC'
       }
     ]);

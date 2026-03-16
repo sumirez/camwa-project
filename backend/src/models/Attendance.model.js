@@ -11,9 +11,9 @@ const Attendance = sequelize.define('Attendance', {
     type: DataTypes.STRING(20),
     references: { model: 'Student', key: 'student_id' },
   },
-  module_id: {
+  intake_module_id: {
     type: DataTypes.STRING(36),
-    references: { model: 'Module', key: 'module_id' },
+    references: { model: 'IntakeModule', key: 'intake_module_id' },
   },
   attendance_status: {
     type: DataTypes.ENUM('present', 'absent', 'late', 'excused'),
@@ -36,7 +36,7 @@ const Attendance = sequelize.define('Attendance', {
   updatedAt: 'updated_at',
   indexes: [
     { fields: ['student_id'] },
-    { fields: ['module_id'] }
+    { fields: ['intake_module_id'] }
   ]
 });
 

@@ -13,7 +13,7 @@ module.exports = {
         ects: 5,
         lecturer_id: 'LEC001',
         program_id: 'CS001',
-        course_id: 1,
+        course_id: 'CS101',
         intake: 2023,
         semester_id: 'SUMMER2023'
       },
@@ -24,7 +24,7 @@ module.exports = {
         ects: 5,
         lecturer_id: 'LEC002',
         program_id: 'IT001',
-        course_id: 2,
+        course_id: 'IT101',
         intake: 2023,
         semester_id: 'SUMMER2023'
       },
@@ -35,7 +35,7 @@ module.exports = {
         ects: 6,
         lecturer_id: 'LEC003',
         program_id: 'CS001',
-        course_id: 1,
+        course_id: 'CS101',
         intake: 2023,
         semester_id: 'SUMMER2023'
       },
@@ -46,7 +46,7 @@ module.exports = {
         ects: 6,
         lecturer_id: 'LEC004',
         program_id: 'IT001',
-        course_id: 2,
+        course_id: 'IT101',
         intake: 2023,
         semester_id: 'SUMMER2023'
       }

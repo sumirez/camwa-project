@@ -2,27 +2,24 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.sequelize.query('TRUNCATE TABLE "course" RESTART IDENTITY CASCADE;');
-
+    await queryInterface.bulkDelete('course', null, {});
     return queryInterface.bulkInsert('course', [
-      { 
-        name: 'Introduction to Programming',
-        lecturer_id: 'LEC001',
+      {
+        course_id: 'CS101',
+        name: 'Introduction to Computer Science',
         program_id: 'CS001',
-        intake: '2023',
-        semester_id: 'SUMMER2023'
+        curriculum_year: 2023
       },
       {
-        name: 'Database Systems',
-        lecturer_id: 'LEC002',
+        course_id: 'IT101',
+        name: 'Information Technology Fundamentals',
         program_id: 'IT001',
-        intake: '2023',
-        semester_id: 'SUMMER2023'
+        curriculum_year: 2023
       }
     ]);
   },
 
   down: async (queryInterface, Sequelize) => {
-    return queryInterface.bulkDelete('course', null, {});
+    await queryInterface.bulkDelete('course', null, {});
   }
 };

@@ -28,12 +28,12 @@ module.exports = {
         onUpdate: 'CASCADE', 
         onDelete: 'CASCADE', 
       },
-      module_id: {
+      intake_module_id: {
         type: Sequelize.STRING(36),
         allowNull: false,
         references: {
-          model: 'module',
-          key: 'module_id'
+          model: 'intake_module',
+          key: 'intake_module_id'
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
@@ -70,7 +70,7 @@ module.exports = {
     });
 
     await queryInterface.addIndex('attendance_request', ['student_id']);
-    await queryInterface.addIndex('attendance_request', ['module_id']);
+    await queryInterface.addIndex('attendance_request', ['intake_module_id']);
   },
     down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable('attendance_request');
