@@ -3,7 +3,7 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('iam', {
-      acc_id: {
+      iam_id: {
         type: Sequelize.STRING(100),
         primaryKey: true,
       },

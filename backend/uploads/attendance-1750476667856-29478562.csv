@@ -1,0 +1,8 @@
+StudentID,moduleId,ModuleName,status
+10421001,TCS,Theoretical Computer Science,present
+10421002,TCS,Theoretical Computer Science,absent
+10421003,TCS,Theoretical Computer Science,present
+10421004,TCS,Theoretical Computer Science,excused
+10421005,DSA,Data Structures and Algorithms,late
+10421006,DSA,Data Structures and Algorithms,late
+10421007,DSA,Data Structures and Algorithms,present

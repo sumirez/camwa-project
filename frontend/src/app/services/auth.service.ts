@@ -9,7 +9,7 @@ import { environment } from 'src/environments/environment';
 export class AuthService {
   private apiUrl = `${environment.apiUrl}/api/auth`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   login(email: string, password: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/login`, { email, password });
@@ -29,7 +29,7 @@ export class AuthService {
 
   getDefaultRoute(): string {
     const role = this.getRole();
-    switch(role) {
+    switch (role) {
       case 'ADMIN':
         return '/module-view-admin';
       case 'FACULTY':

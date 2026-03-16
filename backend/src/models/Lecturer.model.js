@@ -3,7 +3,7 @@ import sequelize from '../common/sequelize/connect.sequelize.js';
 
 
 const Lecturer = sequelize.define('Lecturer', {
-  staff_id: {
+  lecturer_id: {
     type: DataTypes.STRING(20),
     primaryKey: true,
   },

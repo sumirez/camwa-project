@@ -66,7 +66,7 @@ describe('authService.login', () => {
     };
 
     const decodedToken = { uid: '123', email: 'john@example.com' };
-    const user = { acc_id: '123', password: 'hashed_password', role: 'student' };
+    const user = { iam_Id: '123', password: 'hashed_password', role: 'student' };
 
     admin.auth().verifyIdToken.mockResolvedValue(decodedToken);
     Iam.findOne.mockResolvedValue(user);
@@ -85,7 +85,7 @@ describe('authService.login', () => {
   it('should throw an error if password does not match', async () => {
     const req = { body: { idToken: 'firebase_id_token', password: 'wrong_password' } };
     const decodedToken = { uid: '123', email: 'john@example.com' };
-    const user = { acc_id: '123', password: 'hashed_password', role: 'student' };
+    const user = { iam_Id: '123', password: 'hashed_password', role: 'student' };
 
     admin.auth().verifyIdToken.mockResolvedValue(decodedToken);
     Iam.findOne.mockResolvedValue(user);
@@ -108,7 +108,7 @@ describe('authService.login', () => {
 describe('authService.register', () => {
   it('should register a new user and hash the password', async () => {
     const userData = {
-      acc_id: '123',
+      iam_Id: '123',
       username: 'john_doe',
       email: 'john@example.com',
       password: 'password123',

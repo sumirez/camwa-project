@@ -11,32 +11,32 @@ const Attendance = sequelize.define('Attendance', {
     type: DataTypes.STRING(20),
     references: { model: 'Student', key: 'student_id' },
   },
-  intake_module_id: {
+  module_id: {
     type: DataTypes.STRING(36),
-    references: { model: 'IntakeModules', key: 'intake_module_id' },
-  },
-  class_id: {
-    type: DataTypes.STRING(36),
-    references: { model: 'Class', key: 'class_id' },
-  },
-  class_date: {
-    type: DataTypes.DATE,
+    references: { model: 'Module', key: 'module_id' },
   },
   attendance_status: {
     type: DataTypes.ENUM('present', 'absent', 'late', 'excused'),
     allowNull: false 
   },
-  is_deleted: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false,
+  created_at: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW
   },
+  updated_at: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW
+  }
 }, {
   tableName: 'attendance',
-  timestamps: false,
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
   indexes: [
     { fields: ['student_id'] },
-    { fields: ['intake_module_id'] },
-    { fields: ['class_id'] }
+    { fields: ['module_id'] }
   ]
 });
 

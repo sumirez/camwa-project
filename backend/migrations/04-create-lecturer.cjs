@@ -1,10 +1,9 @@
 'use strict';
 
-module.exports = {
-  up: async (queryInterface, Sequelize) => {
+module.exports = {  up: async (queryInterface, Sequelize) => {
 
     await queryInterface.createTable('lecturer', {
-      staff_id: {
+      lecturer_id: {
         type: Sequelize.STRING(20),
         primaryKey: true,
       },

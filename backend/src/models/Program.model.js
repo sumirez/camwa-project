@@ -9,9 +9,6 @@ const Program = sequelize.define('Program', {
   name: {
     type: DataTypes.STRING(50),
   },
-  duration: {
-    type: DataTypes.INTEGER,
-  },
 }, {
   tableName: 'program',
   timestamps: false,

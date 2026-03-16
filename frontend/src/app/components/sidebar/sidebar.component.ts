@@ -28,7 +28,7 @@ export class SidebarComponent implements OnInit {
   constructor(
     private tokenService: TokenService,
     private authService: AuthService
-  ) {}
+  ) { }
 
   ngOnInit() {
     const decodedToken = this.tokenService.getDecodedToken();

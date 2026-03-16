@@ -6,9 +6,6 @@ const Semester = sequelize.define('Semester', {
     type: DataTypes.STRING(36),
     primaryKey: true,
   },
-  sem_type: {
-    type: DataTypes.STRING(20),
-  },
   start_date: {
     type: DataTypes.DATE,
   },

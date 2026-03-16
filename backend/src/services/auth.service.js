@@ -2,7 +2,9 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 import Iam from '../models/Iam.model.js';
+import AcademicCoordinator from '../models/AcademicCoordinator.model.js';
 import { UnauthorizedError, NotFoundError } from '../common/helpers/error.helper.js';
+import tokenBlacklistService from './tokenBlacklist.service.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'your-refresh-secret';
@@ -23,10 +25,12 @@ const authService = {
 
     // Generate tokens
     const accessToken = jwt.sign(
-      { uid: user.acc_id, 
-        email: user.email, 
-        role: user.role, 
-        username: user.username},
+      {
+        uid: user.acc_id,
+        email: user.email,
+        role: user.role,
+        username: user.username
+      },
       JWT_SECRET,
       { expiresIn: '1h' }
     );
@@ -61,12 +65,14 @@ const authService = {
 
     try {
       const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET);
-      
+
       const accessToken = jwt.sign(
-        { uid: user.acc_id, 
-          email: user.email, 
-          role: user.role, 
-          username: user.username },
+        {
+          uid: user.acc_id,
+          email: user.email,
+          role: user.role,
+          username: user.username
+        },
         JWT_SECRET,
         { expiresIn: '1h' }
       );

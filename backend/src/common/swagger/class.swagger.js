@@ -12,12 +12,11 @@ const classAPI = {
           content: {
             "application/json": {
               schema: {
-                type: "object",
-                properties: {
+                type: "object",                properties: {
                   className: { type: "string", description: "Name of the class" },
-                  intakeModuleId: { type: "string", description: "Intake module ID associated with the class" },
+                  moduleId: { type: "string", description: "Module ID associated with the class" },
                 },
-                required: ["className", "intakeModuleId"],
+                required: ["className", "moduleId"],
               },
             },
           },

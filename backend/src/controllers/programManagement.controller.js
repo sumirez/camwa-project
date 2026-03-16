@@ -71,24 +71,23 @@ const programController = {
       res.status(400).json(responseError(error.message, 400));
     }
   },
-
-  // Assign a course to a program
-  assignCourseToProgram: async (req, res) => {
-    const { program_id, course_id } = req.params;
+  // Assign a module to a program
+  assignModuleToProgram: async (req, res) => {
+    const { program_id, module_id } = req.params;
     try {
-      const result = await programService.assignCourseToProgram(program_id, course_id);
+      const result = await programService.assignModuleToProgram(program_id, module_id);
       res.status(200).json(responseSuccess(null, result.message));
     } catch (error) {
       res.status(400).json(responseError(error.message, 400));
     }
   },
 
-  // View courses in a program
-  viewCoursesInProgram: async (req, res) => {
+  // View modules in a program
+  viewModulesInProgram: async (req, res) => {
     const { program_id } = req.params;
     try {
-      const courses = await programService.viewCoursesInProgram(program_id);
-      res.status(200).json(responseSuccess(courses, 'Courses retrieved successfully'));
+      const modules = await programService.viewModulesInProgram(program_id);
+      res.status(200).json(responseSuccess(modules, 'Modules retrieved successfully'));
     } catch (error) {
       res.status(400).json(responseError(error.message, 400));
     }

@@ -23,7 +23,7 @@ module.exports = {
       { student_id: 'STU017', name: 'Quinn Fabray', map_location: "C3-317", program_id: "CS001", intake: "2022", acc_id: "STU017" },
       { student_id: 'STU018', name: 'Rachel Green', map_location: "D4-418", program_id: "IT001", intake: "2022", acc_id: "STU018" },
       { student_id: 'STU019', name: 'Sasha Gilmore', map_location: "A1-119", program_id: "CS001", intake: "2022", acc_id: "STU019" },
-      { student_id: 'STU020', name: 'Toby Flenderson', map_location: "B2-220", program_id: "IT001", intake: "2022", acc_id: "STU020" }, 
+      { student_id: 'STU020', name: 'Toby Flenderson', map_location: "B2-220", program_id: "IT001", intake: "2022", acc_id: "STU020" },
     ]);
   },
 

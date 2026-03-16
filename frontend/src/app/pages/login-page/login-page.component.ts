@@ -19,7 +19,7 @@ export class LoginPageComponent {
   errorMessage: string = "";
   isSubmitting: boolean = false;
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(private router: Router, private authService: AuthService) { }
 
   validateForm(): boolean {
     if (!this.email && !this.password) {
@@ -51,7 +51,7 @@ export class LoginPageComponent {
 
   onSubmit() {
     this.errorMessage = "";
-    
+
     if (!this.validateForm()) {
       return;
     }
@@ -63,7 +63,7 @@ export class LoginPageComponent {
         localStorage.setItem('token', response.metaData.accessToken);
         localStorage.setItem('role', response.metaData.role);
         localStorage.setItem('userId', response.metaData.userId);
-        
+
         const defaultRoute = this.authService.getDefaultRoute();
         this.router.navigate([defaultRoute]);
       },

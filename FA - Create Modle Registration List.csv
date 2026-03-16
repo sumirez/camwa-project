@@ -1,0 +1,8 @@
+StudentID,Email,Intake,Program,Name,moduleId,ModuleName,lecturer,semester
+10421001,10421001@student.vgu.edu.vn,2021,CSE,Le Cong Nguyen,TCS,Theoretical Computer Science,ngocth,WS2025
+10421002,10421002@student.vgu.edu.vn,2021,CSE,Duong Thien Huong,TCS,Theoretical Computer Science,ngocth,WS2025
+10421003,10421003@student.vgu.edu.vn,2021,CSE,Do Minh Quang,TCS,Theoretical Computer Science,ngocth,WS2025
+10421004,10421004@student.vgu.edu.vn,2021,CSE,Nguyen Minh Anh,TCS,Theoretical Computer Science,ngocth,WS2025
+10421005,10421005@student.vgu.edu.vn,2021,CSE,Nguyen Minh Thuan,DSA,Data Structures and Algorithms,huytd,WS2025
+10421006,10421006@student.vgu.edu.vn,2021,CSE,Dinh Thai Duy,DSA,Data Structures and Algorithms,huytd,WS2025
+10421007,10421006@student.vgu.edu.vn,2021,CSE,Dang Thi Anh Thu,DSA,Data Structures and Algorithms,huytd,WS2025

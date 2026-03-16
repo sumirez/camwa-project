@@ -9,55 +9,47 @@ const Notification = sequelize.define('Notification', {
   },
   sender_id: {
     type: DataTypes.STRING(20),
-    references: { model: 'Iam', key: 'acc_id' },
+    allowNull: false,
   },
   receiver_id: {
     type: DataTypes.STRING(20),
-    references: { model: 'Student', key: 'student_id' },
+    allowNull: false,
   },
   notification_type: {
-    type: DataTypes.STRING(50),
+    type: DataTypes.ENUM('new_request', 'request_approved', 'request_rejected'),
+    allowNull: false,
   },
-  notification_text: {
-    type: DataTypes.TEXT,
-  },
-  notification_date: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW,
+  request_id: {
+    type: DataTypes.INTEGER,
+    references: { model: 'attendance_request', key: 'request_id' },
+    allowNull: false,
   },
   status: {
-    type: DataTypes.STRING(10),
+    type: DataTypes.ENUM('unread', 'read'),
+    allowNull: false,
     defaultValue: 'unread',
-    validate: {
-      isIn: [['unread', 'read']], 
-    },
   },
-  module_id: {
-    type: DataTypes.STRING(36),
-    references: { model: 'IntakeModules', key: 'intake_module_id' },
+  created_at: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW
   },
-  priority: {
-    type: DataTypes.INTEGER,
-    defaultValue: 0, // Set priority levels, e.g., 1 for high, 0 for normal, -1 for low
-  },
-  is_critical: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false, 
-  },
-  read_by_receiver: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false,
-  },
+  read_at: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  }
 }, {
   tableName: 'notification',
-  timestamps: false,
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: false,
   indexes: [
+    { fields: ['sender_id'] },
     { fields: ['receiver_id'] },
+    { fields: ['request_id'] },
     { fields: ['status'] },
-    { fields: ['priority'] },
-    { fields: ['is_critical'] },
-  ],
-
+    { fields: ['notification_type'] }
+  ]
 });
 
 export default Notification;

@@ -19,17 +19,7 @@ module.exports = {
         },
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL',
-      },
-      account_id: {
-        type: Sequelize.STRING(100),
-        allowNull: false,
-        references: {
-          model: 'iam',
-          key: 'acc_id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
-      },
+      }
     });
   },
 

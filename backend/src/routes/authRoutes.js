@@ -1,15 +1,24 @@
 import express from 'express';
-import { loginUser, refreshToken, logOutUser } from '../controllers/authController.js';
-import { authenticateJWT, verifyTokenAndRole } from '../middleware/authMiddleware.js';
+import { loginUser, refreshToken, logOutUser, logOutFromAllDevices, getBlacklistStats, toggleACRole } from '../controllers/authController.js';
+import { authenticateJWT, verifyTokenAndRole, getUserRole } from '../middleware/authMiddleware.js';
 
 const authRoutes = express.Router();
 
+// Public routes
 // Public routes
 authRoutes.post('/login', loginUser);
 authRoutes.post('/refresh-token', refreshToken);
 
 // Protected routes - require authentication
 authRoutes.post('/logout', authenticateJWT, logOutUser);
+authRoutes.post('/logout-all-devices', authenticateJWT, logOutFromAllDevices);
+authRoutes.post('/toggle-ac-role', authenticateJWT, toggleACRole);
+
+// Debug/monitoring routes (consider restricting to admin only in production)
+authRoutes.get('/blacklist-stats', verifyTokenAndRole(['ADMIN']), getBlacklistStats);
+
+// Test route to verify token and get role
+authRoutes.get('/verify-role', getUserRole);
 
 // Role-based dashboard routes
 authRoutes.get('/ADMIN-dashboard', verifyTokenAndRole(['ADMIN']), (req, res) => {

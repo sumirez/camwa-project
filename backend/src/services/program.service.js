@@ -1,4 +1,4 @@
-import Program from '../models/Program.model.js'; 
+import Program from '../models/Program.model.js';
 import Student from '../models/Student.model.js';
 import Lecturer from '../models/Lecturer.model.js';
 import Course from '../models/Course.model.js';
@@ -67,19 +67,12 @@ const programService = {
     try {
       const program = await Program.findByPk(program_id);
       const student = await Student.findByPk(student_id);
-      
+
       if (!program || !student) {
         throw new Error('Program or Student not found');
       }
-
-      // Create new program registration entry
-      await ProgramRegistering.create({
-        student_id: student_id,
-        program_id: program_id,
-        intake: new Date().getFullYear() // Current year as intake
-      });
-
-      return { message: 'Student registered to program successfully' };
+      await program.addStudent(student);
+      return { message: 'Student assigned to program successfully' };
     } catch (error) {
       throw new Error('Error registering student to program: ' + error.message);
     }
@@ -90,86 +83,80 @@ const programService = {
     try {
       const program = await Program.findByPk(program_id);
       const lecturer = await Lecturer.findByPk(lecturer_id);
-      
+
       if (!program || !lecturer) {
         throw new Error('Program or Lecturer not found');
       }
-
-      // Update lecturer's program_id
-      await Lecturer.update(
-        { program_id: program_id },
-        { where: { staff_id: lecturer_id } }
-      );
-
+      await program.addLecturer(lecturer);
       return { message: 'Lecturer assigned to program successfully' };
     } catch (error) {
       throw new Error('Error assigning lecturer to program: ' + error.message);
     }
   },
 
-  // Assign a course to a program
-  assignCourseToProgram: async (program_id, course_id) => {
+  // Assign a module to a program
+  assignModuleToProgram: async (program_id, module_id) => {
     try {
       const program = await Program.findByPk(program_id);
-      const course = await Course.findByPk(course_id);
-      if (!program || !course) {
-        throw new Error('Program or Course not found');
+      const module = await Module.findByPk(module_id);
+      if (!program || !module) {
+        throw new Error('Program or Module not found');
       }
-  
-      // Check if course already exists in this program
-      const existingCourse = await Course.findOne({
+
+      // Check if module already exists in this program
+      const existingModule = await Module.findOne({
         where: {
-          name: course.name,
+          name: module.name,
           program_id: program_id
         }
       });
-  
-      if (existingCourse) {
-        throw new Error('This course is already assigned to the program');
+
+      if (existingModule) {
+        throw new Error('This module is already assigned to the program');
       }
-      
-      // Create new course entry excluding course_id
-      const { course_id: id, ...courseData } = course.dataValues;
-      const newCourse = await Course.create({
-        ...courseData,
+
+      // Create new module entry excluding module_id
+      const { module_id: id, ...moduleData } = module.dataValues;
+      const newModule = await Module.create({
+        ...moduleData,
         program_id: program_id
       });
-      
-      return { message: 'Course assigned to program successfully' };
+
+      return { message: 'Module assigned to program successfully' };
     } catch (error) {
-      throw new Error('Error assigning course to program: ' + error.message);
+      throw new Error('Error assigning module to program: ' + error.message);
     }
   },
-  
-// View courses in a program
-viewCoursesInProgram: async (program_id) => {
-  try {
-    const courses = await Course.findAll({
-      where: { program_id: program_id }
-    });
-    if (!courses) {
-      throw new Error('No courses found in this program');
-    }
-    return courses;
-  } catch (error) {
-    throw new Error('Error retrieving courses in program: ' + error.message);
-  }
-},
 
-// View lecturers in a program
-viewLecturersInProgram: async (program_id) => {
-  try {
-    const lecturers = await Lecturer.findAll({
-      where: { program_id: program_id }
-    });
-    if (!lecturers) {
-      throw new Error('No lecturers found in this program');
+  // View modules in a program
+  viewModulesInProgram: async (program_id) => {
+    try {
+      const modules = await Module.findAll({
+        where: { program_id: program_id }
+      });
+      if (!modules) {
+        throw new Error('No modules found in this program');
+      }
+      return modules;
+    } catch (error) {
+      throw new Error('Error retrieving modules in program: ' + error.message);
     }
-    return lecturers;
-  } catch (error) {
-    throw new Error('Error retrieving lecturers in program: ' + error.message);
-  }
-},
+  },
+
+  // View lecturers in a program
+  viewLecturersInProgram: async (program_id) => {
+    try {
+      const lecturers = await Lecturer.findAll({
+        where: { program_id: program_id }
+      });
+      if (!lecturers) {
+        throw new Error('No lecturers found in this program');
+      }
+      return lecturers;
+    } catch (error) {
+      throw new Error('Error retrieving lecturers in program: ' + error.message);
+    }
+  },
 
 
   // View students in a program
@@ -185,7 +172,7 @@ viewLecturersInProgram: async (program_id) => {
     } catch (error) {
       throw new Error('Error retrieving students in program: ' + error.message);
     }
-  },  
+  },
 };
 
 export default programService;

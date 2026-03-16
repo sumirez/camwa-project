@@ -19,10 +19,6 @@ const Student = sequelize.define('Student', {
   intake: {
     type: DataTypes.INTEGER,
     references: { model: 'Intake', key: 'year' },
-  },
-  acc_id: {
-    type: DataTypes.STRING(100),
-    references: { model: 'Iam', key: 'acc_id' },
   }
 }, {
   tableName: 'student',

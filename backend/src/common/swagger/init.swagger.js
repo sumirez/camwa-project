@@ -3,8 +3,7 @@ import swaggerUi from 'swagger-ui-express';
 import attendance from './attendance.swagger.js';
 import auth from './auth.swagger.js';
 import classAPI from './class.swagger.js';
-import course from './course.swagger.js';
-import notification from './notification.swagger.js';
+import module from './module.swagger.js';
 
 
 const swaggerOptions = {
@@ -34,11 +33,9 @@ const swaggerOptions = {
             {
                 BearerAuth: [],
             },
-        ],
-        paths: {
+        ],        paths: {
             ...auth,
-            ...notification,
-            ...course,
+            ...module,
             ...classAPI,
             ...attendance,
         },

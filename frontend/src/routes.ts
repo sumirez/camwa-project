@@ -138,7 +138,7 @@ const routeConfig: Routes = [
     title: "Admin Account Detail Modify View",
     canActivate: [AuthRoute]
   },
- 
+
   {
     path: "module-view-fa",
     component: ModuleViewFAComponent,

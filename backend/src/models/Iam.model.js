@@ -2,12 +2,14 @@ import { DataTypes } from 'sequelize';
 import sequelize from '../common/sequelize/connect.sequelize.js';
 
 const Iam = sequelize.define('Iam', {
-  acc_id: {
+  iam_id: {
     type: DataTypes.STRING(100),
     primaryKey: true,
   },
   username: {
     type: DataTypes.STRING(45),
+    unique: true,
+    allowNull: false
   },
   email: {
     type: DataTypes.STRING(100),
@@ -30,5 +32,13 @@ const Iam = sequelize.define('Iam', {
   tableName: 'iam',
   timestamps: false,
 });
+
+// Define the association here as well
+Iam.associate = function (models) {
+  Iam.hasMany(models.ImageAsset, {
+    foreignKey: 'username',
+    sourceKey: 'username'
+  });
+};
 
 export default Iam;

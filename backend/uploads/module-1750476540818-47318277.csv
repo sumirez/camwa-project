@@ -1,0 +1,5 @@
+moduleId,name,lecturerID, programID, intake, semesterID
+TCS,Theoretical Computer Science,ngocth,CSE,2021,WS2025
+DSA,Data Structures and Algorithms,huytd,CSE,2021,WS2025
+CAR,Computer Architectures,huytd,CSE,2021,WS2025
+JOP,Object - oriented Programming with Java,ngocth,CSE,2021,WS2025

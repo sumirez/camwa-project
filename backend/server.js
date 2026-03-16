@@ -1,9 +1,14 @@
 import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import initSwagger from './src/common/swagger/init.swagger.js';
 import sequelize from './src/common/sequelize/connect.sequelize.js';  // Sequelize setup for database connection
 import rootRoutes from './src/routes/rootRoutes.js';  // Import the root routes
 import cors from 'cors';
 import { handlerError, globalErrorBoundary, requestTimeout } from './src/common/helpers/error.helper.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 
 const app = express();  // Initialize the Express app
@@ -13,6 +18,9 @@ app.use(cors());
 // Middleware
 app.use(express.json());
 app.use(requestTimeout);  // Middleware to parse JSON bodies
+
+// Serve static files from image_assets directory
+app.use('/image_assets', express.static(path.join(__dirname, '../image_assets')));
 
 // Initialize Swagger
 initSwagger(app);

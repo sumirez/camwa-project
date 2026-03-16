@@ -31,7 +31,7 @@ export class ModuleViewLecturerComponent {
   // }
 
   // getModules(){
-  //   this.http.get<any>('http://localhost:3000/api/course/IM001/export-report').subscribe(
+  //   this.http.get<any>('http://localhost:3000/api/module/IM001/export-report').subscribe(
   //     response => {
   //       console.log(response);
   //       this.modules = response;
