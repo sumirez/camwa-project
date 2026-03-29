@@ -2,6 +2,10 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
+    // Clear tables that reference program_id first to avoid FK SET NULL on NOT NULL columns
+    await queryInterface.bulkDelete('academic_coordinator', null, {});
+    await queryInterface.bulkDelete('facility_faculty', null, {});
+    await queryInterface.bulkDelete('lecturer', null, {});
     await queryInterface.bulkDelete('program', null, {});
     return queryInterface.bulkInsert('program', [
       {

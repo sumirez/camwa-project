@@ -25,7 +25,7 @@ export class DashboardAdminComponent {
   approvedAbsentCount: number = 0;
   pendingAbsentCount: number = 0;
 
-  constructor(private dashboardService: DashboardService) {}
+  constructor(private dashboardService: DashboardService) { }
 
   ngOnInit() {
     this.dashboardService.getAttendanceAnalytics().subscribe({
@@ -189,6 +189,9 @@ export class DashboardAdminComponent {
       return { labels: [], datasets: [] };
     }
 
+    console.log("raw data", this.rawData)
+    console.log("view mode", this.viewMode)
+
     const groupMap = new Map<string, { label: string; major: string; rates: number[] }>();
     const labelsInOrder: string[] = [];
 
@@ -239,7 +242,10 @@ export class DashboardAdminComponent {
         data,
         borderColor: color,
         backgroundColor: color,
-        tension: 0.2
+        tension: 0.2,
+        spanGaps: true,
+        pointRadius: 5,
+        pointHoverRadius: 7
       };
     });
 

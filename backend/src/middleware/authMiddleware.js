@@ -25,7 +25,11 @@ export const authenticateJWT = async (req, res, next) => {
     req.user = decoded;
     next();
   } catch (error) {
-    return res.status(401).json({ message: 'Invalid token' });
+    console.error('JWT Verification Error (authenticateJWT):', error.message);
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ message: 'Token has expired' });
+    }
+    return res.status(401).json({ message: 'Invalid token', error: error.message });
   }
 };
 
@@ -58,7 +62,11 @@ export const verifyTokenAndRole = (requiredRoles) => {
         return res.status(403).json({ message: 'Access denied: Insufficient permissions' });
       }
     } catch (error) {
-      return res.status(401).json({ message: 'Invalid token' });
+      console.error('JWT Verification Error (verifyTokenAndRole):', error.message);
+      if (error.name === 'TokenExpiredError') {
+        return res.status(401).json({ message: 'Token has expired' });
+      }
+      return res.status(401).json({ message: 'Invalid token', error: error.message });
     }
   };
 };

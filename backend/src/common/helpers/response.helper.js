@@ -18,7 +18,6 @@ export const responseError = (error, message = 'Internal Server Error') => {
                 code: statusCode,
                 code: statusCode,
                 message: message,
-                stack: stack || 'No stack available', // Added a fallback for the stack trace
                 doc: 'https://api.example.com/docs', // Added documentation link for error cases too
         };
 };

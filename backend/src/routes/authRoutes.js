@@ -25,15 +25,15 @@ authRoutes.get('/ADMIN-dashboard', verifyTokenAndRole(['ADMIN']), (req, res) => 
     res.json({ message: 'Welcome to the ADMIN dashboard' });
 });
 
-authRoutes.get('/faculty-dashboard', verifyTokenAndRole(['faculty']), (req, res) => {
+authRoutes.get('/faculty-dashboard', verifyTokenAndRole(['FACULTY']), (req, res) => {
     res.json({ message: 'Welcome to the faculty dashboard' });
 });
 
-authRoutes.get('/lecturer-dashboard', verifyTokenAndRole(['lecturer']), (req, res) => {
+authRoutes.get('/lecturer-dashboard', verifyTokenAndRole(['LECTURER']), (req, res) => {
     res.json({ message: 'Welcome to the lecturer dashboard' });
 });
 
-authRoutes.get('/student-dashboard', verifyTokenAndRole(['student']), (req, res) => {
+authRoutes.get('/student-dashboard', verifyTokenAndRole(['STUDENT']), (req, res) => {
     res.json({ message: 'Welcome to the student dashboard' });
 });
 

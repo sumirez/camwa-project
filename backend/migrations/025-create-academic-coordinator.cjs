@@ -19,7 +19,7 @@ module.exports = {
           key: 'program_id'
         },
         onUpdate: 'CASCADE',
-        onDelete: 'SET NULL',
+        onDelete: 'RESTRICT',
       },
       current_role: {
         type: Sequelize.ENUM('LECTURER', 'AC'),

@@ -2,11 +2,15 @@ import sequelize from '../common/sequelize/connect.sequelize.js';
 import { QueryTypes } from 'sequelize';
 
 const dashboardService = {
-  // Get attendance analytics grouped by date and program (major)
-  getAttendanceAnalytics: async () => {
+  // Get attendance analytics grouped by period (daily/weekly/monthly) and program (major)
+  getAttendanceAnalytics: async (period = 'daily') => {
+    // Map period to PostgreSQL DATE_TRUNC unit
+    const truncMap = { daily: 'day', weekly: 'week', monthly: 'month' };
+    const trunc = truncMap[period] ?? 'day';
+
     const attendanceSql = `
       SELECT
-        a.class_date AS date,
+        DATE_TRUNC('${trunc}', a.created_at) AS period_start,
         p.program_id,
         p.name AS major,
         COUNT(*) AS total,
@@ -18,9 +22,8 @@ const dashboardService = {
       FROM attendance a
       JOIN student s ON a.student_id = s.student_id
       JOIN program p ON s.program_id = p.program_id
-      WHERE a.is_deleted = false
-      GROUP BY a.class_date, p.program_id, p.name
-      ORDER BY a.class_date ASC;
+      GROUP BY DATE_TRUNC('${trunc}', a.created_at), p.program_id, p.name
+      ORDER BY period_start ASC;
     `;
 
     const passFailSql = `
@@ -42,7 +45,6 @@ const dashboardService = {
           ) AS rate
         FROM attendance a
         JOIN student s ON a.student_id = s.student_id
-        WHERE a.is_deleted = false
         GROUP BY a.student_id, s.program_id
       ) AS sr
       JOIN program p ON sr.program_id = p.program_id
@@ -52,8 +54,8 @@ const dashboardService = {
 
     const requestCountsSql = `
       SELECT
-        COUNT(*) FILTER (WHERE status = 'approved') AS approved_count,
-        COUNT(*) FILTER (WHERE status = 'pending') AS pending_count,
+        COUNT(*) FILTER (WHERE request_status = 'approved') AS approved_count,
+        COUNT(*) FILTER (WHERE request_status = 'pending') AS pending_count,
         COUNT(*) AS total_count
       FROM attendance_request;
     `;

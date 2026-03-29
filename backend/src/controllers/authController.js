@@ -37,7 +37,7 @@ export const logOutUser = async (req, res) => {
       return res.status(401).json(resData);
     }
 
-    const result = await authService.logOut(accessToken);
+    const result = await authService.logOut(req.user.uid);
     const resData = responseSuccess(result, 'Logout successful');
     return res.status(200).json(resData);
   } catch (error) {
@@ -92,7 +92,7 @@ export const toggleACRole = async (req, res) => {
       return res.status(401).json(resData);
     }
 
-    const result = await authService.toggleACRole(accessToken);
+    const result = await authService.toggleACRole(req.user.uid);
     const resData = responseSuccess(result, 'Role toggled successfully');
     return res.status(200).json(resData);
   } catch (error) {
