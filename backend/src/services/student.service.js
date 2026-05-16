@@ -1,6 +1,6 @@
 import Student from '../models/Student.model.js'; // Adjust the import path as needed
 import ModuleRegistration from '../models/ModuleRegistration.model.js';
-import Module from '../models/Module.model.js';
+import IntakeModule from '../models/IntakeModule.model.js';
 import Exam from '../models/Exam.model.js';
 import Attendance from '../models/Attendance.model.js';
 import ImageAsset from '../models/ImageAsset.model.js';
@@ -161,8 +161,8 @@ const studentService = {
         where: { student_id: studentId },
         include: [
           {
-            model: Module,
-            attributes: ['module_id', 'name', 'lecturer_id', 'program_id', 'intake', 'semester_id']
+            model: IntakeModule,
+            attributes: ['intake_module_id', 'program_id', 'intake', 'semester_id', 'course_id', 'lecturer_id']
           }
         ],
         order: [['created_at', 'DESC']]
@@ -177,7 +177,7 @@ const studentService = {
             const attendanceRecords = await Attendance.findAll({
               where: {
                 student_id: studentId,
-                module_id: registration.module_id
+                intake_module_id: registration.intake_module_id
               }
             });
 
@@ -197,12 +197,11 @@ const studentService = {
             
             return {
               module_reg_id: registration.module_reg_id,
-              module_id: registration.module_id,
-              module_name: registration.Module?.name || 'Unknown Module',
-              lecturer_id: registration.Module?.lecturer_id || null,
-              program_id: registration.Module?.program_id || null,
-              intake: registration.Module?.intake || null,
-              semester_id: registration.Module?.semester_id || null,
+              intake_module_id: registration.intake_module_id,
+              lecturer_id: registration.IntakeModule?.lecturer_id || null,
+              program_id: registration.IntakeModule?.program_id || null,
+              intake: registration.IntakeModule?.intake || null,
+              semester_id: registration.IntakeModule?.semester_id || null,
               attendance_rate: attendanceRate,
               total_classes: totalClasses,
               attended_classes: attendedClasses,
@@ -212,12 +211,11 @@ const studentService = {
             // If attendance calculation fails, still return module info with 0% attendance
             return {
               module_reg_id: registration.module_reg_id,
-              module_id: registration.module_id,
-              module_name: registration.Module?.name || 'Unknown Module',
-              lecturer_id: registration.Module?.lecturer_id || null,
-              program_id: registration.Module?.program_id || null,
-              intake: registration.Module?.intake || null,
-              semester_id: registration.Module?.semester_id || null,
+              intake_module_id: registration.intake_module_id,
+              lecturer_id: registration.IntakeModule?.lecturer_id || null,
+              program_id: registration.IntakeModule?.program_id || null,
+              intake: registration.IntakeModule?.intake || null,
+              semester_id: registration.IntakeModule?.semester_id || null,
               attendance_rate: 0,
               total_classes: 0,
               attended_classes: 0,
@@ -242,8 +240,8 @@ const studentService = {
         where: { student_id: studentId },
         include: [
           {
-            model: Module,
-            attributes: ['module_id', 'name', 'lecturer_id', 'program_id', 'intake', 'semester_id'],
+            model: IntakeModule,
+            attributes: ['intake_module_id', 'program_id', 'intake', 'semester_id', 'course_id', 'lecturer_id'],
             required: false
           }
         ],
@@ -264,19 +262,18 @@ const studentService = {
         
         let statusMessage;
         if (isEligible) {
-          statusMessage = `This student is eligible for the exam in module ${examRecord.Module?.name || examRecord.module_id}`;
+          statusMessage = `This student is eligible for the exam in intake module ${examRecord.IntakeModule?.intake_module_id || examRecord.intake_module_id}`;
         } else {
-          statusMessage = `This student is not eligible for the exam in module ${examRecord.Module?.name || examRecord.module_id}`;
+          statusMessage = `This student is not eligible for the exam in intake module ${examRecord.IntakeModule?.intake_module_id || examRecord.intake_module_id}`;
         }
 
         return {
           exam_id: examRecord.exam_id,
-          module_id: examRecord.module_id,
-          module_name: examRecord.Module?.name || 'Unknown Module',
-          lecturer_id: examRecord.Module?.lecturer_id || null,
-          program_id: examRecord.Module?.program_id || null,
-          intake: examRecord.Module?.intake || null,
-          semester_id: examRecord.Module?.semester_id || null,
+          intake_module_id: examRecord.intake_module_id,
+          lecturer_id: examRecord.IntakeModule?.lecturer_id || null,
+          program_id: examRecord.IntakeModule?.program_id || null,
+          intake: examRecord.IntakeModule?.intake || null,
+          semester_id: examRecord.IntakeModule?.semester_id || null,
           attendance_rate: attendanceRate,
           is_eligible: isEligible,
           eligibility_status: statusMessage,

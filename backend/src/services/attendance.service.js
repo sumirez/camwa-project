@@ -24,7 +24,7 @@ const attendanceService = {
 
     // View attendance requests by module
     viewAttendanceRequestsByModule: async (moduleId) => {
-        return await AttendanceRequest.findAll({ where: { module_id: moduleId } });
+        return await AttendanceRequest.findAll({ where: { intake_module_id: moduleId } });
     },
 
     // View attendance requests by student
@@ -58,16 +58,16 @@ const attendanceService = {
         const registration = await ModuleRegistration.findOne({
             where: {
                 student_id: attendanceData.student_id,
-                module_id: attendanceData.module_id
+                intake_module_id: attendanceData.intake_module_id
             }
         });        if (!registration) {
-            throw new Error(`Student ${attendanceData.student_id} is not registered for module ${attendanceData.module_id}`);
+            throw new Error(`Student ${attendanceData.student_id} is not registered for module ${attendanceData.intake_module_id}`);
         }
 
         return await Attendance.create(attendanceData);
     },    // View attendance by module
     viewAttendanceByModule: async (moduleId) => {
-        return await Attendance.findAll({ where: { module_id: moduleId } });
+        return await Attendance.findAll({ where: { intake_module_id: moduleId } });
     },
 
     // View attendance by student
@@ -118,7 +118,7 @@ const attendanceService = {
         const request = await AttendanceRequest.create({
             attendance_id: attendanceId,
             student_id: studentId,
-            module_id: moduleId,
+            intake_module_id: moduleId,
             request_status: 'pending',
             proposed_status: requestDetails.proposed_status,
             reason: requestDetails.reason || null
@@ -136,7 +136,7 @@ const attendanceService = {
 
                 if (studentIam && studentIam.email) {
                     const requestData = {
-                        module_id: moduleId,
+                        intake_module_id: moduleId,
                         attendance_date: attendance.attendance_date,
                         current_status: attendance.attendance_status,
                         proposed_status: requestDetails.proposed_status,
@@ -234,7 +234,7 @@ const attendanceService = {
             try {
                 if (studentIam && studentIam.email) {
                     const requestData = {
-                        module_id: request.module_id,
+                        intake_module_id: request.intake_module_id,
                         original_status: originalAttendance ? originalAttendance.attendance_status : null,
                         proposed_status: request.proposed_status,
                         approved_status: approved_status,
@@ -278,7 +278,7 @@ const attendanceService = {
     getAttendanceRequestsByStatus: async (status, moduleId = null) => {
         const query = { where: { request_status: status } };
         if (moduleId) {
-            query.where.module_id = moduleId;
+            query.where.intake_module_id = moduleId;
         }
         return await AttendanceRequest.findAll(query);
     },
@@ -316,12 +316,12 @@ const attendanceService = {
             for (let i = 2; i <= worksheet.rowCount; i++) {
                 const row = worksheet.getRow(i);
                 const student_id = row.getCell(1).value?.toString(); // StudentID
-                const module_id = row.getCell(2).value?.toString(); // moduleId
+                const intake_module_id = row.getCell(2).value?.toString(); // intakeModuleId
                 const module_name = row.getCell(3).value?.toString(); // ModuleName
                 const status = row.getCell(4).value?.toString(); // status
                 
                 // Skip empty rows or rows with missing required fields
-                if (!student_id || !module_id || !status) {
+                if (!student_id || !intake_module_id || !status) {
                     console.log(`Skipping row ${i} due to missing required fields`);
                     results.failed.push({
                         row: i,
@@ -338,7 +338,7 @@ const attendanceService = {
                     console.log(`Skipping row ${i} due to invalid status: ${status}`);
                     results.failed.push({
                         student_id,
-                        module_id,
+                        intake_module_id,
                         error: `Invalid attendance status: ${status}. Must be one of: present, absent, late, excused`
                     });
                     continue;
@@ -348,7 +348,7 @@ const attendanceService = {
                     // Create attendance record
                     const attendanceData = {
                         student_id,
-                        module_id,
+                        intake_module_id,
                         attendance_status: normalizedStatus,
                     };
                     
@@ -358,14 +358,14 @@ const attendanceService = {
                     results.successful.push({
                         attendance_id: newAttendance.attendance_id,
                         student_id: newAttendance.student_id,
-                        module_id: newAttendance.module_id,
+                        intake_module_id: newAttendance.intake_module_id,
                         attendance_status: newAttendance.attendance_status
                     });
                 } catch (error) {
                     console.error(`Error creating attendance at row ${i}:`, error);
                     results.failed.push({
                         student_id,
-                        module_id,
+                        intake_module_id,
                         error: error.message
                     });
                 }
@@ -384,7 +384,7 @@ const attendanceService = {
             const attendanceRecords = await Attendance.findAll({
                 where: {
                     student_id: studentId,
-                    module_id: moduleId
+                    intake_module_id: moduleId
                 }
             });
             
@@ -411,7 +411,7 @@ const attendanceService = {
             const registration = await ModuleRegistration.findOne({
                 where: {
                     student_id: studentId,
-                    module_id: moduleId
+                    intake_module_id: moduleId
                 }
             });
             
@@ -427,7 +427,7 @@ const attendanceService = {
             const examRecord = await Exam.findOne({
                 where: {
                     student_id: studentId,
-                    module_id: moduleId
+                    intake_module_id: moduleId
                 }
             });
             
@@ -437,7 +437,7 @@ const attendanceService = {
                 // Return the existing record if found, otherwise return calculated values
                 examRecord: examRecord || {
                     student_id: studentId,
-                    module_id: moduleId,
+                    intake_module_id: moduleId,
                     attendance_rate: attendanceRate,
                     is_eligible: isEligible,
                     // Mark that this record hasn't been saved yet
@@ -454,7 +454,7 @@ const attendanceService = {
         try {
             return await Exam.findAll({
                 where: {
-                    module_id: moduleId
+                    intake_module_id: moduleId
                 },
                 order: [
                     ['student_id', 'ASC']
@@ -476,7 +476,7 @@ const attendanceService = {
                     student_id: studentId
                 },
                 order: [
-                    ['module_id', 'ASC']
+                    ['intake_module_id', 'ASC']
                 ]
             });
         } catch (error) {
@@ -492,7 +492,7 @@ const attendanceService = {
             // Get all students registered for the module
             const registrations = await ModuleRegistration.findAll({
                 where: {
-                    module_id: moduleId
+                    intake_module_id: moduleId
                 }
             });
             
@@ -518,7 +518,7 @@ const attendanceService = {
                     let examRecord = await Exam.findOne({
                         where: {
                             student_id: registration.student_id,
-                            module_id: moduleId
+                            intake_module_id: moduleId
                         }
                     });
                     
@@ -531,7 +531,7 @@ const attendanceService = {
                         // Create new record
                         examRecord = await Exam.create({
                             student_id: registration.student_id,
-                            module_id: moduleId,
+                            intake_module_id: moduleId,
                             attendance_rate: attendanceRate,
                             is_eligible: isEligible
                         });
@@ -547,7 +547,7 @@ const attendanceService = {
                     // Add error info but continue with other students
                     results.push({
                         student_id: registration.student_id,
-                        module_id: moduleId,
+                        intake_module_id: moduleId,
                         error: studentError.message
                     });
                 }
@@ -566,7 +566,7 @@ const attendanceService = {
         try {
             // Get all unique module IDs from module registrations
             const modules = await ModuleRegistration.findAll({
-                attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('module_id')), 'module_id']],
+                attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('intake_module_id')), 'intake_module_id']],
                 raw: true
             });
 
@@ -579,10 +579,10 @@ const attendanceService = {
             let failureCount = 0;            // Process each module
             for (const module of modules) {
                 try {
-                    console.log(`Processing module: ${module.module_id}`);
+                    console.log(`Processing intake module: ${module.intake_module_id}`);
                     
                     // Use the existing updateExamEligibilityForModule method
-                    const moduleResults = await attendanceService.updateExamEligibilityForModule(module.module_id);
+                    const moduleResults = await attendanceService.updateExamEligibilityForModule(module.intake_module_id);
                       // Count eligible and ineligible students for this module
                     const moduleEligible = moduleResults.filter(result => !result.error && result.isEligible === true).length;
                     const moduleIneligible = moduleResults.filter(result => !result.error && result.isEligible === false).length;
@@ -596,7 +596,7 @@ const attendanceService = {
                     
                     successCount += moduleEligible;
                     failureCount += moduleIneligible;allResults.push({
-                        module_id: module.module_id,
+                        intake_module_id: module.intake_module_id,
                         students_processed: moduleResults.length,
                         students_success: moduleEligible,
                         students_failed: moduleIneligible,
@@ -604,9 +604,9 @@ const attendanceService = {
                         success_attendance_rate: moduleSuccessRate,
                         results: moduleResults
                     });                } catch (moduleError) {
-                    console.error(`Error processing module ${module.module_id}:`, moduleError);
+                    console.error(`Error processing intake module ${module.intake_module_id}:`, moduleError);
                     allResults.push({
-                        module_id: module.module_id,
+                        intake_module_id: module.intake_module_id,
                         error: moduleError.message,
                         students_processed: 0,
                         students_success: 0,
@@ -639,7 +639,7 @@ const attendanceService = {
         try {
             // Get all unique module IDs for the specific lecturer from module registrations
             const modules = await ModuleRegistration.findAll({
-                attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('module_id')), 'module_id']],
+                attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('intake_module_id')), 'intake_module_id']],
                 where: { lecturer_id: lecturerId },
                 raw: true
             });
@@ -655,10 +655,10 @@ const attendanceService = {
             // Process each module
             for (const module of modules) {
                 try {
-                    console.log(`Processing module: ${module.module_id} for lecturer: ${lecturerId}`);
+                    console.log(`Processing intake module: ${module.intake_module_id} for lecturer: ${lecturerId}`);
                     
                     // Use the existing updateExamEligibilityForModule method
-                    const moduleResults = await attendanceService.updateExamEligibilityForModule(module.module_id);
+                    const moduleResults = await attendanceService.updateExamEligibilityForModule(module.intake_module_id);
                       // Count eligible and ineligible students for this module
                     const moduleEligible = moduleResults.filter(result => !result.error && result.isEligible === true).length;
                     const moduleIneligible = moduleResults.filter(result => !result.error && result.isEligible === false).length;
@@ -674,7 +674,7 @@ const attendanceService = {
                     failureCount += moduleIneligible;
 
                     allResults.push({
-                        module_id: module.module_id,
+                        intake_module_id: module.intake_module_id,
                         students_processed: moduleResults.length,
                         students_success: moduleEligible,
                         students_failed: moduleIneligible,
@@ -682,9 +682,9 @@ const attendanceService = {
                         success_attendance_rate: moduleSuccessRate,
                         results: moduleResults
                     });                } catch (moduleError) {
-                    console.error(`Error processing module ${module.module_id}:`, moduleError);
+                    console.error(`Error processing intake module ${module.intake_module_id}:`, moduleError);
                     allResults.push({
-                        module_id: module.module_id,
+                        intake_module_id: module.intake_module_id,
                         error: moduleError.message,
                         students_processed: 0,
                         students_success: 0,
@@ -731,14 +731,14 @@ const attendanceService = {
             const exportResults = [];            // Process each module from the eligibility data
             for (const moduleData of eligibilityData.modules) {
                 try {
-                    console.log(`Exporting eligibility data for module: ${moduleData.module_id}`);
+                    console.log(`Exporting eligibility data for intake module: ${moduleData.intake_module_id}`);
                     console.log(`Module data structure:`, JSON.stringify(moduleData, null, 2));
                     
                     // Check if there's an error with this module
                     if (moduleData.error) {
-                        console.log(`Module ${moduleData.module_id} has error: ${moduleData.error}`);
+                        console.log(`Intake module ${moduleData.intake_module_id} has error: ${moduleData.error}`);
                         exportResults.push({
-                            module_id: moduleData.module_id,
+                            intake_module_id: moduleData.intake_module_id,
                             error: `Module processing error: ${moduleData.error}`,
                             fileName: null,
                             filePath: null
@@ -747,18 +747,18 @@ const attendanceService = {
                     }
                     
                     if (!moduleData.results || moduleData.results.length === 0) {
-                        console.log(`No students found for module: ${moduleData.module_id}`);
+                        console.log(`No students found for intake module: ${moduleData.intake_module_id}`);
                         console.log(`Module results:`, moduleData.results);
                         continue;
                     }
 
                     // Get additional module and student information
                     const moduleInfo = await ModuleRegistration.findOne({
-                        where: { module_id: moduleData.module_id },
+                        where: { intake_module_id: moduleData.intake_module_id },
                         include: [
                             { 
                                 model: Module, 
-                                attributes: ['module_id', 'name'] 
+                                attributes: ['intake_module_id'] 
                             },
                             { 
                                 model: Lecturer, 
@@ -768,17 +768,17 @@ const attendanceService = {
                     });
 
                     if (!moduleInfo) {
-                        console.log(`No module info found for: ${moduleData.module_id}`);
+                        console.log(`No intake module info found for: ${moduleData.intake_module_id}`);
                         continue;
                     }
 
                     // Create Excel workbook and worksheet
                     const workbook = new Excel.Workbook();
-                    const worksheet = workbook.addWorksheet(`${moduleData.module_id}_Eligibility`);
+                    const worksheet = workbook.addWorksheet(`${moduleData.intake_module_id}_Eligibility`);
 
                     // Set up headers
                     worksheet.columns = [
-                        { header: 'Module ID', key: 'module_id', width: 15 },
+                        { header: 'Intake Module ID', key: 'intake_module_id', width: 20 },
                         { header: 'Module Name', key: 'module_name', width: 30 },
                         { header: 'Lecturer ID', key: 'lecturer_id', width: 15 },
                         { header: 'Student ID', key: 'student_id', width: 15 },
@@ -816,8 +816,8 @@ const attendanceService = {
                             }
 
                             studentData.push({
-                                module_id: moduleData.module_id,
-                                module_name: moduleInfo.Module.name,
+                                intake_module_id: moduleData.intake_module_id,
+                                module_name: moduleInfo.IntakeModule?.intake_module_id || moduleData.intake_module_id,
                                 lecturer_id: moduleInfo.lecturer_id,
                                 student_id: student.student_id,
                                 student_name: student.name,
@@ -831,7 +831,7 @@ const attendanceService = {
                     }
 
                     if (studentData.length === 0) {
-                        console.log(`No valid student data for module: ${moduleData.module_id}`);
+                        console.log(`No valid student data for intake module: ${moduleData.intake_module_id}`);
                         continue;
                     }
 
@@ -862,12 +862,12 @@ const attendanceService = {
                     });
 
                     // Save the file
-                    const fileName = `${moduleData.module_id}_eligibility_for_exam.xlsx`;
+                    const fileName = `${moduleData.intake_module_id}_eligibility_for_exam.xlsx`;
                     const filePath = path.join(exportDir, fileName);
                     await workbook.xlsx.writeFile(filePath);
 
                     exportResults.push({
-                        module_id: moduleData.module_id,
+                        intake_module_id: moduleData.intake_module_id,
                         fileName: fileName,
                         filePath: filePath,
                         studentsProcessed: studentData.length,
@@ -877,9 +877,9 @@ const attendanceService = {
                     });
 
                 } catch (moduleError) {
-                    console.error(`Error exporting module ${moduleData.module_id}:`, moduleError);
+                    console.error(`Error exporting intake module ${moduleData.intake_module_id}:`, moduleError);
                     exportResults.push({
-                        module_id: moduleData.module_id,
+                        intake_module_id: moduleData.intake_module_id,
                         error: moduleError.message,
                         fileName: null,
                         filePath: null
@@ -924,14 +924,14 @@ const attendanceService = {
             // Process each module from the eligibility data
             for (const moduleData of eligibilityData.modules) {
                 try {
-                    console.log(`Exporting eligibility data for lecturer ${lecturerId}, module: ${moduleData.module_id}`);
+                    console.log(`Exporting eligibility data for lecturer ${lecturerId}, intake module: ${moduleData.intake_module_id}`);
                     console.log(`Module data structure:`, JSON.stringify(moduleData, null, 2));
                     
                     // Check if there's an error with this module
                     if (moduleData.error) {
-                        console.log(`Module ${moduleData.module_id} has error: ${moduleData.error}`);
+                        console.log(`Intake module ${moduleData.intake_module_id} has error: ${moduleData.error}`);
                         exportResults.push({
-                            module_id: moduleData.module_id,
+                            intake_module_id: moduleData.intake_module_id,
                             lecturer_id: lecturerId,
                             error: `Module processing error: ${moduleData.error}`,
                             fileName: null,
@@ -941,7 +941,7 @@ const attendanceService = {
                     }
                     
                     if (!moduleData.results || moduleData.results.length === 0) {
-                        console.log(`No students found for module: ${moduleData.module_id}`);
+                        console.log(`No students found for intake module: ${moduleData.intake_module_id}`);
                         console.log(`Module results:`, moduleData.results);
                         continue;
                     }
@@ -949,13 +949,13 @@ const attendanceService = {
                     // Get additional module and student information
                     const moduleInfo = await ModuleRegistration.findOne({
                         where: { 
-                            module_id: moduleData.module_id,
+                            intake_module_id: moduleData.intake_module_id,
                             lecturer_id: lecturerId 
                         },
                         include: [
                             { 
                                 model: Module, 
-                                attributes: ['module_id', 'name'] 
+                                attributes: ['intake_module_id'] 
                             },
                             { 
                                 model: Lecturer, 
@@ -965,17 +965,17 @@ const attendanceService = {
                     });
 
                     if (!moduleInfo) {
-                        console.log(`No module info found for lecturer ${lecturerId}, module: ${moduleData.module_id}`);
+                        console.log(`No intake module info found for lecturer ${lecturerId}, intake module: ${moduleData.intake_module_id}`);
                         continue;
                     }
 
                     // Create Excel workbook and worksheet
                     const workbook = new Excel.Workbook();
-                    const worksheet = workbook.addWorksheet(`${moduleData.module_id}_Eligibility`);
+                    const worksheet = workbook.addWorksheet(`${moduleData.intake_module_id}_Eligibility`);
 
                     // Set up headers
                     worksheet.columns = [
-                        { header: 'Module ID', key: 'module_id', width: 15 },
+                        { header: 'Intake Module ID', key: 'intake_module_id', width: 20 },
                         { header: 'Module Name', key: 'module_name', width: 30 },
                         { header: 'Lecturer ID', key: 'lecturer_id', width: 15 },
                         { header: 'Student ID', key: 'student_id', width: 15 },
@@ -1013,8 +1013,8 @@ const attendanceService = {
                             }
 
                             studentData.push({
-                                module_id: moduleData.module_id,
-                                module_name: moduleInfo.Module.name,
+                                intake_module_id: moduleData.intake_module_id,
+                                module_name: moduleInfo.IntakeModule?.intake_module_id || moduleData.intake_module_id,
                                 lecturer_id: lecturerId,
                                 student_id: student.student_id,
                                 student_name: student.name,
@@ -1028,7 +1028,7 @@ const attendanceService = {
                     }
 
                     if (studentData.length === 0) {
-                        console.log(`No valid student data for module: ${moduleData.module_id}`);
+                        console.log(`No valid student data for intake module: ${moduleData.intake_module_id}`);
                         continue;
                     }
 
@@ -1058,13 +1058,13 @@ const attendanceService = {
                         column.width = Math.max(column.width || 10, 12);
                     });
 
-                    // Save the file with naming pattern: lecturer_id + module_id + eligibility_for_exam.xlsx
-                    const fileName = `${lecturerId}_${moduleData.module_id}_eligibility_for_exam.xlsx`;
+                    // Save the file with naming pattern: lecturer_id + intake_module_id + eligibility_for_exam.xlsx
+                    const fileName = `${lecturerId}_${moduleData.intake_module_id}_eligibility_for_exam.xlsx`;
                     const filePath = path.join(exportDir, fileName);
                     await workbook.xlsx.writeFile(filePath);
 
                     exportResults.push({
-                        module_id: moduleData.module_id,
+                        intake_module_id: moduleData.intake_module_id,
                         lecturer_id: lecturerId,
                         fileName: fileName,
                         filePath: filePath,
@@ -1075,9 +1075,9 @@ const attendanceService = {
                     });
 
                 } catch (moduleError) {
-                    console.error(`Error exporting module ${moduleData.module_id} for lecturer ${lecturerId}:`, moduleError);
+                    console.error(`Error exporting intake module ${moduleData.intake_module_id} for lecturer ${lecturerId}:`, moduleError);
                     exportResults.push({
-                        module_id: moduleData.module_id,
+                        intake_module_id: moduleData.intake_module_id,
                         lecturer_id: lecturerId,
                         error: moduleError.message,
                         fileName: null,

@@ -12,7 +12,7 @@ import dashboardRouter from './dashboard.router.js';
 import semesterRouter from './semesterRoutes.js';
 import intakeRouter from './intakeRoutes.js';
 import moduleRegistrationRoutes from './moduleRegistration.routes.js';
-import notificationRouter from './notification.router.js'; ``
+import notificationRouter from './notification.router.js';
 
 
 const rootRoutes = express.Router();
@@ -49,9 +49,6 @@ rootRoutes.use('/dashboard', dashboardRouter);
 
 //fetchiing jwt token for testing
 rootRoutes.post('/test-token', testTokenController.getTestToken);
-
-//Account routes
-rootRoutes.use('/account', accountRouter);
 
 //Account routes
 rootRoutes.use('/account', accountRouter);

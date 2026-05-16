@@ -8,11 +8,11 @@ const Exam = sequelize.define('Exam', {
     autoIncrement: true,
     field: 'exam_id'
   },
-  module_id: {
+  intake_module_id: {
     type: DataTypes.STRING(36),
     allowNull: false,
-    references: { model: 'module', key: 'module_id' },
-    field: 'module_id'
+    references: { model: 'IntakeModule', key: 'intake_module_id' },
+    field: 'intake_module_id'
   },
   student_id: {
     type: DataTypes.STRING(20),
@@ -54,9 +54,9 @@ Exam.prototype.checkEligibility = function() {
 };
 
 // Import related models for associations
-import Module from './Module.model.js';
+import IntakeModule from './IntakeModule.model.js';
 
 // Define associations
-Exam.belongsTo(Module, { foreignKey: 'module_id' });
+Exam.belongsTo(IntakeModule, { foreignKey: 'intake_module_id' });
 
 export default Exam;
