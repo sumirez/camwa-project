@@ -97,6 +97,7 @@ export class DashboardStudentComponent {
           y: {
             min: 0,
             max: 100,
+            ticks: { stepSize: 20 },
             title: {
               display: true,
               text: 'Rate (%)'
@@ -156,6 +157,7 @@ export class DashboardStudentComponent {
           y: {
             min: 0,
             max: 100,
+            ticks: { stepSize: 20 },
             title: {
               display: true,
               text: 'Student Percentage (%)'
@@ -240,20 +242,27 @@ export class DashboardStudentComponent {
   }
 
   private getLabelForDate(date: Date, mode: ViewMode): string {
-    const monthLabel = date.toLocaleString('en-US', { month: 'short' });
+    const monthShort = date.toLocaleString('en-US', { month: 'short' }).toUpperCase();
     const day = date.getDate();
 
     if (mode === 'daily') {
       const dayLabel = day.toString().padStart(2, '0');
-      return `${monthLabel} ${dayLabel}`;
+      return `${dayLabel}-${monthShort}`;
     }
 
     if (mode === 'weekly') {
-      const weekOfMonth = Math.ceil(day / 7);
-      return `${monthLabel} W${weekOfMonth}`;
+      const weekNum = this.getWeekOfYear(date);
+      return `Week ${weekNum}`;
     }
 
-    // monthly
-    return monthLabel;
+    return date.toLocaleString('en-US', { month: 'long' });
+  }
+
+  private getWeekOfYear(date: Date): number {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const dayNum = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
   }
 }

@@ -3,14 +3,15 @@ import { QueryTypes } from 'sequelize';
 
 const dashboardService = {
   // Get attendance analytics grouped by period (daily/weekly/monthly) and program (major)
-  getAttendanceAnalytics: async (period = 'daily') => {
+  getAttendanceAnalytics: async (period = 'daily', year = 2021) => {
     // Map period to PostgreSQL DATE_TRUNC unit
     const truncMap = { daily: 'day', weekly: 'week', monthly: 'month' };
     const trunc = truncMap[period] ?? 'day';
+    const selectedYear = Number(year) || new Date().getFullYear();
 
     const attendanceSql = `
       SELECT
-        DATE_TRUNC('${trunc}', a.created_at) AS period_start,
+        DATE_TRUNC('${trunc}', a.created_at) AS date,
         p.program_id,
         p.name AS major,
         COUNT(*) AS total,
@@ -22,8 +23,9 @@ const dashboardService = {
       FROM attendance a
       JOIN student s ON a.student_id = s.student_id
       JOIN program p ON s.program_id = p.program_id
+      WHERE EXTRACT(YEAR FROM a.created_at) = :year
       GROUP BY DATE_TRUNC('${trunc}', a.created_at), p.program_id, p.name
-      ORDER BY period_start ASC;
+      ORDER BY date ASC;
     `;
 
     const passFailSql = `
@@ -45,6 +47,7 @@ const dashboardService = {
           ) AS rate
         FROM attendance a
         JOIN student s ON a.student_id = s.student_id
+        WHERE EXTRACT(YEAR FROM a.created_at) = :year
         GROUP BY a.student_id, s.program_id
       ) AS sr
       JOIN program p ON sr.program_id = p.program_id
@@ -61,12 +64,12 @@ const dashboardService = {
     `;
 
     const [attendanceRates, passFailByMajor, requestCounts] = await Promise.all([
-      sequelize.query(attendanceSql, { type: QueryTypes.SELECT }),
-      sequelize.query(passFailSql, { type: QueryTypes.SELECT }),
+      sequelize.query(attendanceSql, { type: QueryTypes.SELECT, replacements: { year: selectedYear } }),
+      sequelize.query(passFailSql, { type: QueryTypes.SELECT, replacements: { year: selectedYear } }),
       sequelize.query(requestCountsSql, { type: QueryTypes.SELECT })
     ]);
 
-    return { attendanceRates, passFailByMajor, requestCounts: requestCounts[0] };
+    return { attendanceRates, passFailByMajor, requestCounts: requestCounts[0], year: selectedYear };
   }
 };
 

@@ -39,6 +39,14 @@ module.exports = {
       { iam_id: 'STU018', username: 'student18', email: 'student18@example.com', password: hashedStudentPassword, role: 'STUDENT' },
       { iam_id: 'STU019', username: 'student19', email: 'student19@example.com', password: hashedStudentPassword, role: 'STUDENT' },
       { iam_id: 'STU020', username: 'student20', email: 'student20@example.com', password: hashedStudentPassword, role: 'STUDENT' },
+      { iam_id: 'STU021', username: 'student21', email: 'student21@example.com', password: hashedStudentPassword, role: 'STUDENT' },
+      { iam_id: 'STU022', username: 'student22', email: 'student22@example.com', password: hashedStudentPassword, role: 'STUDENT' },
+      { iam_id: 'STU023', username: 'student23', email: 'student23@example.com', password: hashedStudentPassword, role: 'STUDENT' },
+      { iam_id: 'STU024', username: 'student24', email: 'student24@example.com', password: hashedStudentPassword, role: 'STUDENT' },
+      { iam_id: 'STU025', username: 'student25', email: 'student25@example.com', password: hashedStudentPassword, role: 'STUDENT' },
+      { iam_id: 'STU026', username: 'student26', email: 'student26@example.com', password: hashedStudentPassword, role: 'STUDENT' },
+      { iam_id: 'STU027', username: 'student27', email: 'student27@example.com', password: hashedStudentPassword, role: 'STUDENT' },
+      { iam_id: 'STU028', username: 'student28', email: 'student28@example.com', password: hashedStudentPassword, role: 'STUDENT' },
     ]);
   },
 

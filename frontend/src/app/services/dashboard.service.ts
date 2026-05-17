@@ -9,9 +9,12 @@ export class DashboardService {
 
   constructor(private http: HttpClient) {}
 
-  getAttendanceAnalytics(): Observable<any> {
+  getAttendanceAnalytics(period = 'daily', year = 2021): Observable<any> {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.get(`${this.apiUrl}/attendance-analytics`, { headers });
+    return this.http.get(
+      `${this.apiUrl}/attendance-analytics?period=${period}&year=${year}`,
+      { headers }
+    );
   }
 }

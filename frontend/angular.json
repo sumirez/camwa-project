@@ -20,7 +20,15 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "css",
-            "assets": ["src/favicon.ico", "src/assets"],
+            "assets": [
+              "src/favicon.ico",
+              "src/assets",
+              {
+                "glob": "**/*",
+                "input": "../image_assets",
+                "output": "/image_assets"
+              }
+            ],
             "styles": ["src/styles.css"],
             "scripts": []
           },

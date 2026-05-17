@@ -26,7 +26,10 @@
     "camwa-frontend": "file:",
     "chart.js": "^4.5.1",
     "jwt-decode": "^4.0.0",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "tslib": "^2.8.1",
+    "uuid": "latest",
+    "zone.js": "^0.15.1"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^18.2.11",
@@ -42,6 +45,6 @@
     "@types/jasmine": "^5.1.5",
     "bootstrap": "^5.3.3",
     "rxjs": "^7.8.1",
-    "typescript": "^5.5.4"
+    "typescript": "5.5.4"
   }
 }

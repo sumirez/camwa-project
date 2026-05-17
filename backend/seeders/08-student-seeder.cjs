@@ -24,6 +24,14 @@ module.exports = {
       { student_id: 'STU018', name: 'Rachel Green', map_location: "D4-418", program_id: "IT001", intake: "2022", iam_id: "STU018" },
       { student_id: 'STU019', name: 'Sasha Gilmore', map_location: "A1-119", program_id: "CS001", intake: "2022", iam_id: "STU019" },
       { student_id: 'STU020', name: 'Toby Flenderson', map_location: "B2-220", program_id: "IT001", intake: "2022", iam_id: "STU020" },
+      { student_id: 'STU021', name: 'Uma Thurman', map_location: "C3-321", program_id: "IS001", intake: "2023", iam_id: "STU021" },
+      { student_id: 'STU022', name: 'Victor Hugo', map_location: "D4-422", program_id: "IS001", intake: "2023", iam_id: "STU022" },
+      { student_id: 'STU023', name: 'Wendy Darling', map_location: "A1-323", program_id: "IS001", intake: "2022", iam_id: "STU023" },
+      { student_id: 'STU024', name: 'Xavier Woods', map_location: "B2-424", program_id: "IS001", intake: "2022", iam_id: "STU024" },
+      { student_id: 'STU025', name: 'Yara Shahidi', map_location: "C3-325", program_id: "IS001", intake: "2023", iam_id: "STU025" },
+      { student_id: 'STU026', name: 'Zane Malik', map_location: "D4-426", program_id: "IS001", intake: "2023", iam_id: "STU026" },
+      { student_id: 'STU027', name: 'Amy Adams', map_location: "A1-327", program_id: "IS001", intake: "2022", iam_id: "STU027" },
+      { student_id: 'STU028', name: 'Ben Stiller', map_location: "B2-428", program_id: "IS001", intake: "2022", iam_id: "STU028" },
     ]);
   },
 
