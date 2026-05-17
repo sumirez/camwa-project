@@ -52,6 +52,7 @@ attendanceRouter.delete('/:attendanceId', verifyTokenAndRole(['ADMIN', 'FACULTY'
 
 // Attendance request management
 attendanceRouter.get('/requests', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER']), attendanceController.getAttendanceRequestsByStatus);
+attendanceRouter.get('/lecturer/:lecturerId', verifyTokenAndRole(['ADMIN', 'FACULTY', 'LECTURER']), attendanceController.viewAttendanceRequestsByLecturerId);
 
 // Attendance correction requests
 attendanceRouter.post('/request-correction', verifyTokenAndRole(['STUDENT']), attendanceController.requestAttendanceCorrection);

@@ -1,6 +1,7 @@
 import Attendance from '../models/Attendance.model.js';
 import AttendanceRequest from '../models/AttendanceRequest.model.js';
 import ModuleRegistration from '../models/ModuleRegistration.model.js';
+import Class from '../models/Class.model.js';
 import Student from '../models/Student.model.js';
 import Module from '../models/Module.model.js';
 import Lecturer from '../models/Lecturer.model.js';
@@ -34,9 +35,25 @@ const attendanceService = {
 
     // View attendance requests by lecturer id, optionally filtered by class_id
     viewAttendanceRequestsByLecturerId: async (lecturerId, class_id) => {
-        const where = { lecturer_id: lecturerId };
-        if (class_id) where.class_id = class_id;
-        return await AttendanceRequest.findAll({ where });
+        const classWhere = { lecturer_id: lecturerId };
+        if (class_id) classWhere.class_id = class_id;
+
+        const classes = await Class.findAll({
+            where: classWhere,
+            attributes: ['intake_module_id']
+        });
+
+        const intakeModuleIds = [...new Set(classes.map((item) => item.intake_module_id).filter(Boolean))];
+
+        if (intakeModuleIds.length === 0) {
+            return [];
+        }
+
+        return await AttendanceRequest.findAll({
+            where: {
+                intake_module_id: intakeModuleIds
+            }
+        });
     },
 
     // Update an attendance request by request_id
@@ -77,7 +94,26 @@ const attendanceService = {
 
     // View attendance by multiple class IDs
     viewAttendanceByClassIds: async (classIds) => {
-        return await Attendance.findAll({ where: { class_id: classIds } });
+        const classes = await Class.findAll({
+            where: { class_id: classIds },
+            attributes: ['class_id', 'intake_module_id']
+        });
+
+        const intakeModuleIds = [...new Set(classes.map((item) => item.intake_module_id).filter(Boolean))];
+        if (intakeModuleIds.length === 0) {
+            return [];
+        }
+
+        const attendanceRecords = await Attendance.findAll({
+            where: { intake_module_id: intakeModuleIds }
+        });
+
+        const classMap = new Map(classes.map((item) => [item.intake_module_id, item.class_id]));
+
+        return attendanceRecords.map((record) => ({
+            ...record.toJSON(),
+            class_id: classMap.get(record.intake_module_id) || null
+        }));
     },
 
     // Update attendance by attendance_id

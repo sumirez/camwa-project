@@ -13,6 +13,8 @@ import semesterRouter from './semesterRoutes.js';
 import intakeRouter from './intakeRoutes.js';
 import moduleRegistrationRoutes from './moduleRegistration.routes.js';
 import notificationRouter from './notification.router.js';
+import courseRouter from './course.router.js';
+import classRouter from './class.router.js';
 
 
 const rootRoutes = express.Router();
@@ -61,5 +63,11 @@ rootRoutes.use('/module-registrations', moduleRegistrationRoutes);
 
 // Notification routes
 rootRoutes.use('/notifications', notificationRouter);
+
+// Course routes
+rootRoutes.use('/course', courseRouter);
+
+// Class routes
+rootRoutes.use('/class', classRouter);
 
 export default rootRoutes;

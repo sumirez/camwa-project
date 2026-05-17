@@ -1,7 +1,7 @@
 import Course from '../models/Course.model.js';
 import Lecturer from '../models/Lecturer.model.js';
 import Student from '../models/Student.model.js';
-import IntakeModule from '../models/IntakeModules.model.js';
+import IntakeModule from '../models/IntakeModule.model.js';
 import Class from '../models/Class.model.js';
 import Attendance from '../models/Attendance.model.js';
 import auditLogService from '../services/auditLogService.js';
@@ -23,7 +23,32 @@ const courseService = {
 
     // View courses by lecturer (Lecturer)
     viewCoursesByLecturer: async (lecturerId) => {
-        return await Course.findAll({ where: { lecturer_id: lecturerId } });
+        const intakeModules = await IntakeModule.findAll({
+            where: { lecturer_id: lecturerId },
+            attributes: ['intake_module_id', 'lecturer_id', 'program_id', 'course_id', 'intake', 'semester_id']
+        });
+
+        if (intakeModules.length === 0) {
+            return [];
+        }
+
+        const courseIds = [...new Set(intakeModules.map((item) => item.course_id).filter(Boolean))];
+        const courses = await Course.findAll({
+            where: { course_id: courseIds },
+            attributes: ['course_id', 'name', 'program_id', 'curriculum_year']
+        });
+        const courseMap = new Map(courses.map((course) => [course.course_id, course]));
+
+        return intakeModules.map((intakeModule) => ({
+            course_id: intakeModule.course_id,
+            name: courseMap.get(intakeModule.course_id)?.name || intakeModule.course_id,
+            program_id: courseMap.get(intakeModule.course_id)?.program_id || intakeModule.program_id,
+            curriculum_year: courseMap.get(intakeModule.course_id)?.curriculum_year,
+            intake_module_id: intakeModule.intake_module_id,
+            lecturer_id: intakeModule.lecturer_id,
+            intake: intakeModule.intake,
+            semester_id: intakeModule.semester_id
+        }));
     },
 
     // View intake modules by student (Student)

@@ -102,26 +102,303 @@ The correction request design allows students to request changes when they belie
 The reporting design is mainly connected to exam eligibility. The backend calculates attendance rates for students in each intake module and stores the result in the `Exam` model. The exam record includes the student, `intake_module_id`, attendance rate, and eligibility result. The system can then export eligibility information into Excel files so lecturers or faculty users can review attendance-based exam status in a familiar format.
 
 Chapter 4	
-Front-end Design
-The front-end of CAMWA is implemented using Angular and Bootstrap 5. It provides the user interface for login, dashboard access, module viewing, attendance request management, account management, and profile viewing. The front-end works together with the Node.js and Express backend by sending HTTP requests to the backend API and displaying the returned data to the user. Through this interface, different user groups can access the functions that match their role and workflow.
-4.1	4.1	Front-end Architecture
-The Front-end separates user interface into pages, reusable components, and services. By separating the interface into smaller parts, the front-end becomes easier to understand and easier to extend when new pages or functions are added.
+Dashboard Front-end Implementation
+This chapter explains the front-end implementation completed in this thesis. Although the CAMWA project contains many pages such as login, module view, request view, account management, and profile pages, the main implementation scope of this thesis is only the dashboard front-end. This means the chapter focuses on how the dashboard interface was built, how attendance-related information is presented visually, and how notification information is displayed to the user.
 
-The page layer contains complete views that are directly connected to application routes. Examples include the login page, admin dashboard, faculty dashboard, lecturer dashboard, module view pages, module detail pages, request view pages, account management pages, and profile page. Each page is responsible for displaying a specific workflow to the user. For example, the login page handles credential input and login feedback, while the dashboard pages display attendance analytics and summary information.
+The dashboard front-end is implemented using Angular and Bootstrap 5. It works with the existing backend by requesting available dashboard data and showing the returned results in the user interface. In this thesis, the main contribution is not backend redesign, but the implementation of the user-facing dashboard layer, especially graphing and notification features. These features are important because users need to see attendance summaries, trends, and important updates quickly after logging into the system.
 
-The component layer contains reusable interface elements used across pages. The project includes components such as sidebars, admin sidebars, action tables, attendance popups, module popups, sub-content sections, and footer components. These components help avoid repeating the same user interface logic in multiple pages. For example, sidebar components support navigation, while table and popup components support repeated display and interaction patterns.
+The dashboard is also designed to support role-based use in CAMWA. Different roles may need different summary information, but the main goal is the same, which is to provide a clear and simple overview of important data in one place. For this reason, the dashboard implementation separates layout structure, reusable interface elements, and service-based data communication so that the front-end can be extended more easily in future work.
+4.1	Dashboard Page Structure
+In this thesis, the main dashboard implementation is shown through `dashboard-admin.component.ts` and `dashboard-admin.component.html`. This page is the main place where the user can see attendance summary, charts, and notifications. The page is written as a standalone Angular component and imports `CommonModule` and `FormsModule`. This setup allows the page to use Angular data binding, conditions such as `*ngIf`, loops such as `*ngFor`, and form input binding for the graph view selection.
 
-The service layer handles communication with the backend API. Angular services such as `AuthService`, `DashboardService`, `AttendanceService`, `StudentService`, `CourseService`, and other related services use `HttpClient` to send requests to backend endpoints. These services are responsible for building API URLs, attaching authorization headers when needed, and returning observable responses to the page components. This keeps HTTP request logic separate from template and display logic.
+The HTML layout is divided into a few simple parts. At the top, there is the page title and the notification bell. Below that, the left side contains the main charts, while the right side contains summary cards and another chart section. The page also includes cards for values such as total students, on-time students, absent students, approved absent requests, and pending requests. Because of this structure, the dashboard can show both summary numbers and visual graphs in one screen.
 
-The current routing structure is mainly defined in `src/routes.ts`. The route configuration maps URL paths to the corresponding Angular components, such as `/login`, `/profile`, `/dashboard-admin`, `/dashboard-faculty`, `/dashboard-lecturer`, `/module-view-admin`, `/module-view-lecturer`, `/module-view-student`, and request or account management pages. Most protected routes use the `AuthRoute` guard, which checks whether a token exists before allowing access. This provides basic front-end route protection, while the backend remains responsible for enforcing final authorization rules.
-4.2	4.2	Role Interfaces
-The front-end provides different page structures for the main user roles. Admin users have access to pages such as admin dashboard, admin module view, account management, module creation, and module modification. Faculty users have their own dashboard and module view pages. Lecturer users have lecturer dashboard, lecturer module view, module detail view, and request view pages. Student users have student module view, student module detail, profile, and personal attendance-related pages.
+In simple flow, the user opens the dashboard page, Angular loads the component, the component asks data from the backend through services, and the returned data is shown in cards, graphs, and notification dropdown. This is the main front-end flow implemented in this thesis.
+4.2	Dashboard Data and Feature Implementation
+4.2.1	Backend Data Calling Flow
+The dashboard page does not query the backend directly inside the HTML. Instead, it uses Angular services. In `dashboard-admin.component.ts`, the constructor injects `DashboardService` and `NotificationService`. These two services are responsible for sending HTTP requests to the backend API.
 
-The route configuration shows this separation through paths such as `/dashboard-admin`, `/dashboard-faculty`, `/dashboard-lecturer`, `/module-view-admin`, `/module-view-fa`, `/module-view-lecturer`, and `/module-view-student`. This makes the front-end navigation clearer because each role has a separate entry point and page group. AC-related pages also exist, such as `/module-view-ac` and `/request-view-ac`, but the complete AC role-switching behavior should not be described as fully implemented because the backend role-toggle service is incomplete.
-4.3	4.3 	Pages and Services
-The dashboard pages use `DashboardService` to retrieve attendance analytics from the backend. The admin and staff dashboards use Chart.js to display attendance rates and pass or fail statistics through line and bar charts. These charts help convert backend attendance data into a visual form that is easier for users to understand.
+The first important flow happens in `ngOnInit()`. When the page is loaded, `ngOnInit()` calls `loadAttendanceAnalytics()` and `loadUnreadCount()`. This means the dashboard immediately requests attendance analytics data and unread notification count from the backend. In `dashboard.service.ts`, the function `getAttendanceAnalytics(period, year)` sends a `GET` request to `/api/dashboard/attendance-analytics?period=...&year=...`. It also reads the token from `localStorage` and puts it in the `Authorization` header. In `notification.service.ts`, the functions `getNotifications()`, `getUnreadCount()`, `markAsRead()`, and `markAllAsRead()` are used for notification-related requests.
 
-Module pages provide the interface for viewing module-related information. The project includes separate module views for admin, faculty, AC, lecturer, and student users. Module detail pages can display class sessions, class members, and attendance-related information. Some module pages currently use static sample data, while other parts contain service-based or planned API access. This means the module interface already provides the structure for the workflow, but not every module view is fully connected to live backend data.
+Listing 4 1: Dashboard page initialization flow
+
+```javascript
+ngOnInit() {
+  this.loadAttendanceAnalytics();
+  this.loadUnreadCount();
+}
+```
+
+This code shows the first step of the dashboard flow. After the page is opened, Angular runs `ngOnInit()`, and the component starts loading both attendance data and notification data.
+
+Listing 4 2: Dashboard service call for attendance analytics
+
+```javascript
+getAttendanceAnalytics(period = 'daily', year = 2021): Observable<any> {
+  const token = localStorage.getItem('token');
+  const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  return this.http.get(
+    `${this.apiUrl}/attendance-analytics?period=${period}&year=${year}`,
+    { headers }
+  );
+}
+```
+
+This code is taken from `dashboard.service.ts`. It shows that the front-end gets the token from `localStorage`, adds it into the request header, and then sends a `GET` request to the backend dashboard API.
+
+Listing 4 3: Notification service call for unread count
+
+```javascript
+getUnreadCount(): Observable<any> {
+  return this.http.get(`${this.apiUrl}/unread-count`, { headers: this.getAuthHeaders() });
+}
+```
+
+This code is taken from `notification.service.ts`. It is used to get the number of unread notifications so that the front-end can show the badge on the notification bell.
+
+Listing 4 4: Attendance data loading in the component
+
+```javascript
+private loadAttendanceAnalytics() {
+  this.dashboardService.getAttendanceAnalytics(this.viewMode, this.selectedYear).subscribe({
+    next: (response: any) => {
+      const meta = response?.metaData;
+      this.rawData = meta?.attendanceRates ?? [];
+      this.passFailData = meta?.passFailByMajor ?? [];
+      this.buildChart();
+      this.buildBarChart();
+    }
+  });
+}
+```
+
+This code shows the next step after the request is sent. When the backend returns the response, the component saves the returned data into variables and then calls the chart functions to display the result.
+
+The display part is implemented in `dashboard-admin.component.html`. After the TypeScript file stores the returned values in component variables, Angular binding is used to show those values in the dashboard cards and notification section.
+
+Listing 4 5: Displaying returned values in the dashboard HTML
+
+```javascript
+<span class="stat-number">{{ totalStudents }}</span>
+<span class="stat-number">{{ presentCount }}</span>
+<span class="stat-number">{{ absentCount }}</span>
+<span class="notification-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+
+<button
+  type="button"
+  class="notification-item"
+  *ngFor="let notification of notifications"
+  [class.unread]="notification.status === 'unread'"
+  (click)="markAsRead(notification)"
+>
+  <span class="notification-item-message">{{ getNotificationMessage(notification) }}</span>
+</button>
+```
+
+This code shows how Angular displays backend data on the page. The values stored in `totalStudents`, `presentCount`, `absentCount`, and `unreadCount` are shown by interpolation using `{{ }}`. The notification list is shown with `*ngFor`, which repeats the HTML block for each notification item returned from the backend. Because of this, once the data is received in the component, the page updates automatically and shows the latest result to the user.
+
+After the backend returns the response, the component stores the result in variables such as `rawData`, `passFailData`, `weeklyMajorData`, `totalStudents`, `presentCount`, `absentCount`, `approvedAbsentCount`, `pendingAbsentCount`, `notifications`, and `unreadCount`. These variables are later used in the HTML file. For example, `{{ totalStudents }}` is shown in the summary card, while `notifications` is shown in the notification dropdown. This approach is useful because the data logic stays in the TypeScript file and the HTML file only focuses on displaying the result.
+4.2.2	Chart Implementation
+The graph feature in the dashboard is implemented with Chart.js, which is imported in `dashboard-admin.component.ts` using `import { Chart } from 'chart.js/auto';`. In this page, three main charts are created, which are the line chart for attendance rate, the bar chart for pass and fail percentage by major, and the weekly attendance chart by major.
+
+The line chart is created in the `buildChart()` function. First, the component gets the canvas element with `document.getElementById('attendanceChart')`. After that, it prepares labels and datasets from the backend data by using the `aggregateData()` function. Finally, it creates a new `Chart` object with type `line`. This chart changes based on the selected `viewMode`, which can be daily, weekly, or monthly. When the user changes the radio button, the `onViewChange()` function runs and loads the data again.
+
+Listing 4 6: Line chart implementation for attendance analytics
+
+```javascript
+private buildChart() {
+  if (this.chart) {
+    this.chart.destroy();
+    this.chart = null;
+  }
+
+  const canvas = document.getElementById('attendanceChart') as HTMLCanvasElement | null;
+  const ctx = canvas?.getContext('2d');
+  if (!canvas) return;
+
+  const gradient = ctx?.createLinearGradient(0, 0, 0, canvas.height || 300);
+  if (gradient) {
+    gradient.addColorStop(0, '#00B5E2');
+    gradient.addColorStop(1, '#FFFFFF00');
+  }
+
+  const { labels, datasets } = this.aggregateData(gradient ?? '#00B5E2');
+
+  this.chart = new Chart('attendanceChart', {
+    type: 'line',
+    data: {
+      labels,
+      datasets
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false
+    }
+  });
+}
+```
+
+This code shows the main implementation of the attendance line chart. The function first removes the old chart if it already exists. Next, it gets the canvas element, prepares a gradient color, and uses `aggregateData()` to build labels and datasets from backend data. After that, Chart.js renders the final line chart in the `attendanceChart` canvas.
+
+The bar chart is created in the `buildBarChart()` function. This function reads `passFailData` from the backend response and maps the values into arrays such as major name, pass percentage, and fail percentage. Then it creates a bar chart in the `passFailChart` canvas. The weekly chart is created in the `buildWeeklyMajorChart()` function. This function filters the latest week from `weeklyMajorData`, sorts it by major, and then displays another bar chart in the `weeklyMajorChart` canvas.
+
+Listing 4 7: Bar chart implementation for pass and fail percentage by major
+
+```javascript
+private buildBarChart() {
+  if (this.barChart) {
+    this.barChart.destroy();
+    this.barChart = null;
+  }
+
+  if (!this.passFailData || this.passFailData.length === 0) {
+    return;
+  }
+
+  const majors = this.passFailData.map((r) => r.major);
+  const passPercentages = this.passFailData.map((r) => Number(r.pass_percentage));
+  const failPercentages = this.passFailData.map((r) => Number(r.fail_percentage));
+
+  this.barChart = new Chart('passFailChart', {
+    type: 'bar',
+    data: {
+      labels: majors,
+      datasets: [
+        {
+          label: 'Pass (≥75%)',
+          data: passPercentages,
+          backgroundColor: '#0baae8'
+        },
+        {
+          label: 'Fail (<75%)',
+          data: failPercentages,
+          backgroundColor: '#ec1025'
+        }
+      ]
+    }
+  });
+}
+```
+
+This code shows how the dashboard creates the pass and fail chart. The component reads `passFailData`, separates the data into major names, pass percentages, and fail percentages, and then sends these arrays into Chart.js to create a bar chart.
+
+Listing 4 8: Weekly attendance chart implementation by major
+
+```javascript
+private buildWeeklyMajorChart() {
+  if (this.weeklyMajorChart) {
+    this.weeklyMajorChart.destroy();
+    this.weeklyMajorChart = null;
+  }
+
+  if (!this.weeklyMajorData || this.weeklyMajorData.length === 0) {
+    return;
+  }
+
+  const latestWeekDate = this.weeklyMajorData.reduce((latest: string, row: any) => {
+    return new Date(row.date) > new Date(latest) ? row.date : latest;
+  }, this.weeklyMajorData[0].date);
+
+  const latestWeekRows = this.weeklyMajorData
+    .filter((row: any) => row.date === latestWeekDate)
+    .sort((a: any, b: any) => String(a.major).localeCompare(String(b.major)));
+
+  const labels = latestWeekRows.map((row: any) => row.major);
+  const data = latestWeekRows.map((row: any) => Number(row.rate));
+
+  this.weeklyMajorChart = new Chart('weeklyMajorChart', {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data,
+        backgroundColor: '#00B5E2'
+      }]
+    }
+  });
+}
+```
+
+This code shows the weekly chart flow. The component first finds the latest week from the backend data, filters the rows from that week, sorts them by major name, and then creates a bar chart to display the weekly attendance rate by major.
+
+One important point in the implementation is that the old chart is destroyed before creating a new one. This can be seen in `buildChart()`, `buildBarChart()`, and `buildWeeklyMajorChart()`, where the existing chart instance is checked and destroyed first. This helps avoid duplicate chart rendering on the same canvas.
+4.2.3	Notification Implementation
+The notification feature is also implemented in the admin dashboard page. In the HTML file, there is a bell button, an unread count badge, and a dropdown list for notifications. When the bell button is clicked, the `toggleNotifications()` function is called. If the dropdown is opened, the component calls `loadNotifications()` and `loadUnreadCount()`.
+
+Listing 4 9: Notification button and unread badge in the dashboard HTML
+
+```html
+<button type="button" class="notification-button" (click)="toggleNotifications()">
+  <img src="/image_assets/bell.png" alt="Notifications" class="notification-bell-icon" />
+  <span class="notification-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+</button>
+
+<div class="notification-dropdown" *ngIf="notificationOpen">
+  <div class="notification-state" *ngIf="loadingNotifications">Loading...</div>
+  <div class="notification-state" *ngIf="!loadingNotifications && notifications.length === 0">No notifications</div>
+</div>
+```
+
+This code shows the notification button in the HTML file. When the button is clicked, Angular calls `toggleNotifications()`. The unread badge is only shown when `unreadCount` is greater than zero, and the dropdown is only shown when `notificationOpen` is true.
+
+Listing 4 10: Notification toggle flow in the component
+
+```javascript
+toggleNotifications() {
+  this.notificationOpen = !this.notificationOpen;
+  if (this.notificationOpen) {
+    this.loadNotifications();
+    this.loadUnreadCount();
+  }
+}
+```
+
+This code shows the action flow after the notification button is clicked. The component changes the open state of the dropdown. If the dropdown is opened, the component immediately requests the notification list and the unread count.
+
+The function `loadNotifications()` uses `NotificationService.getNotifications()` to request the notification list from the backend. The response is saved into the `notifications` array. The function `loadUnreadCount()` uses `getUnreadCount()` to update the unread badge. In the dropdown, Angular uses `*ngFor` to loop through notification items and display them on the page.
+
+Listing 4 11: Loading notifications from the backend
+
+```javascript
+loadNotifications() {
+  this.loadingNotifications = true;
+  this.notificationService.getNotifications().subscribe({
+    next: (response) => {
+      this.notifications = response?.metaData ?? [];
+      this.loadingNotifications = false;
+    },
+    error: () => {
+      this.notifications = [];
+      this.loadingNotifications = false;
+    }
+  });
+}
+```
+
+This code shows how the front-end receives notifications from the backend. Before the request is sent, `loadingNotifications` is set to true. After the response returns, the data is stored in the `notifications` array, and the loading state is turned off.
+
+Listing 4 12: Loading unread notification count
+
+```javascript
+loadUnreadCount() {
+  this.notificationService.getUnreadCount().subscribe({
+    next: (response) => {
+      this.unreadCount = Number(response?.metaData?.count ?? 0);
+    },
+    error: () => {
+      this.unreadCount = 0;
+    }
+  });
+}
+```
+
+This code is used to update the unread badge. The front-end sends a request to the unread count endpoint and then stores the returned value in `unreadCount`.
+
+The page also allows the user to mark notifications as read. This is done by the `markAsRead(notification)` function and the `markAllNotificationsAsRead()` function. After a successful request, the front-end updates the notification status in the component data and decreases the unread count. Because of this, the notification area is not only for display, but also supports simple user interaction.
+4.3	Dashboard Flow Summary
+The overall dashboard flow in this thesis is simple. First, the user opens the dashboard page. Second, Angular loads `DashboardAdminComponent`. Third, the component calls the backend through `DashboardService` and `NotificationService`. Fourth, the returned data is saved in component variables. Fifth, the page uses these variables to show cards, graphs, and notifications in the HTML template. If the user changes graph mode or opens the notification area, the component sends another request and updates the display again.
+
+This flow shows the main contribution of the thesis clearly. The backend already exists, but this thesis implements the front-end layer that receives backend data and turns it into a dashboard interface that is easier for users to read and use.
 Chapter 5	
 Findings and Conclusion
 5.1	5.1 	Findings
